@@ -1,23 +1,46 @@
 import rawSeed from '../../data/SkillConnect_Full_Demo_Seed.json';
+import { AP_CITIES, MALE_PORTRAITS, FEMALE_PORTRAITS } from './constants';
 
-const STORAGE_KEY_WORKERS = 'skillconnect_workers_v1';
-const STORAGE_KEY_BOOKINGS = 'skillconnect_bookings_v1';
-const STORAGE_KEY_QUOTES = 'skillconnect_quotations_v1';
-const STORAGE_KEY_REVIEWS = 'skillconnect_reviews_v1';
-const STORAGE_KEY_VERIFICATIONS = 'skillconnect_verifications_v1';
+const STORAGE_KEY_WORKERS = 'skillconnect_workers_v2';
+const STORAGE_KEY_BOOKINGS = 'skillconnect_bookings_v2';
+const STORAGE_KEY_QUOTES = 'skillconnect_quotations_v2';
+const STORAGE_KEY_REVIEWS = 'skillconnect_reviews_v2';
+const STORAGE_KEY_VERIFICATIONS = 'skillconnect_verifications_v2';
 
-// Professional curated friendly portraits for workers
-const AVATARS = [
-  'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?w=400&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=400&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&auto=format&fit=crop&q=80'
+// Known female names from Andhra Pradesh seed data to ensure 100% gender-photo match
+const FEMALE_NAMES = new Set([
+  'Sravani Kumar',
+  'Lakshmi Devi',
+  'Meena Kumari',
+  'Anusha Patel',
+  'Divya Sri',
+  'Pooja Rani',
+  'Chandrika Rao',
+  'Harika Reddy'
+]);
+
+// Strategic distribution across Andhra Pradesh (AP) cities
+const AP_CITY_ASSIGNMENTS = [
+  'Vijayawada',
+  'Visakhapatnam',
+  'Guntur',
+  'Tirupati',
+  'Rajahmundry',
+  'Nellore',
+  'Kakinada',
+  'Kurnool',
+  'Kadapa',
+  'Anantapur',
+  'Vijayawada',
+  'Visakhapatnam',
+  'Eluru',
+  'Ongole',
+  'Tenali',
+  'Mangalagiri',
+  'Vizianagaram',
+  'Srikakulam',
+  'Tirupati',
+  'Bhimavaram'
 ];
 
 export const skillsList = rawSeed.skills || [];
@@ -64,6 +87,9 @@ export function initializeWorkers() {
   // Base wage hints map per skill
   const baseWages = [650, 700, 750, 800, 600, 550, 850, 600, 900, 700];
 
+  let maleIndex = 0;
+  let femaleIndex = 0;
+
   const normalized = (rawSeed.worker_profiles || []).map((wp, index) => {
     const user = userMap[wp.user_id] || { full_name: "Skilled Professional", phone: "9876543210" };
     const skills = workerSkillsMap[wp.id] || [{ id: 2, nameEn: "Plumbing", nameTe: "ప్లంబింగ్", years: 3 }];
@@ -73,22 +99,30 @@ export function initializeWorkers() {
     const reviewCount = 8 + (index * 7) % 35;
     const wage = baseWages[index % baseWages.length] + ((wp.experience_years || 2) * 40);
 
+    const isFemale = FEMALE_NAMES.has(user.full_name);
+    const gender = isFemale ? 'female' : 'male';
+    const avatar = isFemale 
+      ? FEMALE_PORTRAITS[femaleIndex++ % FEMALE_PORTRAITS.length]
+      : MALE_PORTRAITS[maleIndex++ % MALE_PORTRAITS.length];
+    const city = AP_CITY_ASSIGNMENTS[index % AP_CITY_ASSIGNMENTS.length] || wp.service_area || "Vijayawada";
+
     return {
       id: wp.id,
       userId: wp.user_id,
       name: user.full_name,
+      gender: gender,
       phone: user.phone,
       email: user.email,
       bio: wp.bio,
       experienceYears: wp.experience_years,
-      serviceArea: wp.service_area || "Vijayawada",
+      serviceArea: city,
       availability: wp.availability_status || "available",
       verificationStatus: wp.verification_status || "verified",
       skills: skills,
       rating: parseFloat(rating),
       reviewCount: reviewCount,
       indicativeWage: wage,
-      avatar: AVATARS[index % AVATARS.length]
+      avatar: avatar
     };
   });
 

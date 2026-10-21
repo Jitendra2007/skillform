@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
+import { AP_CITIES } from '../lib/constants';
 import { 
   ShieldCheck, 
   Upload, 
@@ -21,6 +22,7 @@ export default function WorkerRegistration() {
 
   // Form State
   const [fullName, setFullName] = useState('');
+  const [gender, setGender] = useState('male');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [serviceArea, setServiceArea] = useState('Vijayawada');
@@ -41,7 +43,7 @@ export default function WorkerRegistration() {
     );
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!consentGiven) {
       alert("Please accept the verification consent checkbox before submitting.");
@@ -56,8 +58,9 @@ export default function WorkerRegistration() {
         nameTe: s.name_te
       }));
 
-    const registered = registerWorker({
+    await registerWorker({
       fullName,
+      gender,
       phone,
       email,
       serviceArea,
@@ -73,7 +76,7 @@ export default function WorkerRegistration() {
     setSubmitted(true);
     setTimeout(() => {
       navigate('/worker-dashboard');
-    }, 2000);
+    }, 1800);
   };
 
   return (
@@ -148,6 +151,59 @@ export default function WorkerRegistration() {
             </div>
 
             <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label">{lang === 'te' ? 'లింగం (జెండర్)' : 'Gender (Photo Sync)'} *</label>
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem' }}>
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.5rem 1rem',
+                  borderRadius: 'var(--radius-sm)',
+                  border: gender === 'male' ? '2px solid var(--color-primary)' : '1px solid var(--color-border)',
+                  backgroundColor: gender === 'male' ? 'var(--color-primary-light)' : '#FFFFFF',
+                  cursor: 'pointer',
+                  fontWeight: gender === 'male' ? 700 : 400,
+                  fontSize: '0.9rem'
+                }}>
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="male"
+                    checked={gender === 'male'}
+                    onChange={() => setGender('male')}
+                    style={{ accentColor: 'var(--color-primary)' }}
+                  />
+                  <span>👨 {lang === 'te' ? 'పురుషుడు' : 'Male'}</span>
+                </label>
+
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.5rem 1rem',
+                  borderRadius: 'var(--radius-sm)',
+                  border: gender === 'female' ? '2px solid var(--color-primary)' : '1px solid var(--color-border)',
+                  backgroundColor: gender === 'female' ? 'var(--color-primary-light)' : '#FFFFFF',
+                  cursor: 'pointer',
+                  fontWeight: gender === 'female' ? 700 : 400,
+                  fontSize: '0.9rem'
+                }}>
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="female"
+                    checked={gender === 'female'}
+                    onChange={() => setGender('female')}
+                    style={{ accentColor: 'var(--color-primary)' }}
+                  />
+                  <span>👩 {lang === 'te' ? 'స్త్రీ' : 'Female'}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
+            <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label">{t('workerRegistration.phone')} *</label>
               <input
                 type="tel"
@@ -158,9 +214,7 @@ export default function WorkerRegistration() {
                 onChange={(e) => setPhone(e.target.value)}
               />
             </div>
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label">{t('workerRegistration.email')}</label>
               <input
@@ -173,16 +227,17 @@ export default function WorkerRegistration() {
             </div>
 
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">{t('workerRegistration.serviceArea')} *</label>
+              <label className="form-label">{lang === 'te' ? 'ఆంధ్రప్రదేశ్ జిల్లా / నగరం' : 'AP District / City'} *</label>
               <select
                 className="form-select"
                 value={serviceArea}
                 onChange={(e) => setServiceArea(e.target.value)}
               >
-                <option value="Vijayawada">Vijayawada (విజయవాడ)</option>
-                <option value="Guntur">Guntur (గుంటూరు)</option>
-                <option value="Mangalagiri">Mangalagiri (మంగళగిరి)</option>
-                <option value="Tenali">Tenali (తెనాలి)</option>
+                {AP_CITIES.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.nameEn} ({c.nameTe}) • {c.district}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

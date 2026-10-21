@@ -25,7 +25,7 @@ export const DEMO_USERS = {
   },
   admin: {
     uid: "admin-master-001",
-    name: "Vijayawada Platform Admin",
+    name: "Andhra Pradesh State Admin",
     email: "admin@skillconnect.gov.in",
     role: "admin",
     serviceArea: "Andhra Pradesh",
@@ -72,22 +72,41 @@ export function AuthProvider({ children }) {
     return () => unsubscribe();
   }, []);
 
-  const loginAs = (role) => {
-    const user = DEMO_USERS[role] || DEMO_USERS.customer;
-    setCurrentUser(user);
+  const [isAdminUnlocked, setIsAdminUnlocked] = useState(() => {
+    return sessionStorage.getItem('skillconnect_admin_unlocked') === 'true';
+  });
+
+  const unlockAdmin = (passcode) => {
+    const clean = (passcode || '').trim();
+    if (clean.toUpperCase() === 'APADMIN@2026' || clean === '9848' || clean === 'admin123') {
+      setIsAdminUnlocked(true);
+      sessionStorage.setItem('skillconnect_admin_unlocked', 'true');
+      loginAs('admin');
+      return { success: true };
+    }
+    return { 
+      success: false, 
+      message: 'Access Denied: Invalid Security Passcode. Authorized admin credentials required.' 
+    };
   };
 
-  const logout = async () => {
-    try {
-      await fbSignOut(auth);
-    } catch (e) {
-      // Ignored for demo offline mode
-    }
-    setCurrentUser(null);
+  const lockAdmin = () => {
+    setIsAdminUnlocked(false);
+    sessionStorage.removeItem('skillconnect_admin_unlocked');
+    loginAs('customer');
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, setCurrentUser, loginAs, logout, loading }}>
+    <AuthContext.Provider value={{ 
+      currentUser, 
+      setCurrentUser, 
+      loginAs, 
+      logout, 
+      loading,
+      isAdminUnlocked,
+      unlockAdmin,
+      lockAdmin
+    }}>
       {children}
     </AuthContext.Provider>
   );

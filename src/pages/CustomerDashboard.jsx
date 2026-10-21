@@ -93,7 +93,7 @@ export default function CustomerDashboard() {
               {t('dashboards.customer.title')}
             </h1>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>
-              {t('dashboards.customer.welcome')}, <strong>{currentUser?.name || "Keerthana Rao"}</strong> (Vijayawada)
+              {t('dashboards.customer.welcome')}, <strong>{currentUser?.name || "Keerthana Rao"}</strong> ({currentUser?.serviceArea || "Andhra Pradesh"})
             </p>
           </div>
 

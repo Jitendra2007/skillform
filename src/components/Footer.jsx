@@ -117,7 +117,7 @@ export default function Footer() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem', color: '#94A3B8' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <MapPin size={16} style={{ color: 'var(--color-primary)' }} />
-                <span>Vijayawada • Guntur • Mangalagiri • Tenali (AP)</span>
+                <span>Serving All 26 Districts Across Andhra Pradesh (AP)</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Phone size={16} style={{ color: 'var(--color-primary)' }} />
@@ -158,7 +158,7 @@ export default function Footer() {
             © 2026 SkillConnect — Smart Community Labour Networking Platform. All Rights Reserved.
           </div>
           <div style={{ display: 'flex', gap: '1.25rem' }}>
-            <span>College Project Prototype</span>
+            <span>Andhra Pradesh State Network</span>
             <span>React + Vite + Firebase</span>
             <span>English & తెలుగు</span>
           </div>

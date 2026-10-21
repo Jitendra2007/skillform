@@ -20,15 +20,31 @@ import {
 export default function AdminDashboard() {
   const { lang, t } = useLanguage();
   const { verifications, approveVerification, rejectVerification, complaints, workers, bookings } = useData();
-  const { currentUser } = useAuth();
+  const { currentUser, isAdminUnlocked, unlockAdmin, lockAdmin } = useAuth();
 
   const [inspectDoc, setInspectDoc] = useState(null);
   const [rejectModalDoc, setRejectModalDoc] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
   const [adminNotice, setAdminNotice] = useState('');
 
+  // Security Gate State
+  const [passcode, setPasscode] = useState('');
+  const [passcodeError, setPasscodeError] = useState('');
+  const [showPasscode, setShowPasscode] = useState(false);
+
   const pendingVerifs = verifications.filter(v => v.status === 'pending');
   const resolvedVerifs = verifications.filter(v => v.status !== 'pending');
+
+  const handleSecuritySubmit = (e) => {
+    e.preventDefault();
+    setPasscodeError('');
+    const result = unlockAdmin(passcode);
+    if (!result.success) {
+      setPasscodeError(result.message);
+    } else {
+      setPasscode('');
+    }
+  };
 
   const handleApprove = (vId) => {
     approveVerification(vId);
@@ -48,6 +64,151 @@ export default function AdminDashboard() {
     setAdminNotice(msg);
     setTimeout(() => setAdminNotice(''), 3500);
   };
+
+  // -------------------------------------------------------------
+  // SECURITY GATE LOCK SCREEN (Rendered if Admin is Locked)
+  // -------------------------------------------------------------
+  if (!isAdminUnlocked) {
+    return (
+      <div style={{
+        paddingTop: '4rem',
+        paddingBottom: '5rem',
+        minHeight: '80vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div className="container" style={{ maxWidth: '520px' }}>
+          <div className="card" style={{
+            padding: '2.5rem 2rem',
+            boxShadow: 'var(--shadow-xl)',
+            border: '2px solid #E2E8F0',
+            textAlign: 'center'
+          }}>
+            {/* Security Shield Icon */}
+            <div style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '50%',
+              backgroundColor: '#FEF3C7',
+              color: '#B45309',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 1.25rem auto'
+            }}>
+              <ShieldAlert size={34} />
+            </div>
+
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              backgroundColor: '#F1F5F9',
+              color: '#475569',
+              padding: '0.25rem 0.75rem',
+              borderRadius: 'var(--radius-full)',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              letterSpacing: '0.5px',
+              marginBottom: '0.75rem'
+            }}>
+              <Lock size={13} />
+              <span>RESTRICTED ACCESS • AP LABOUR PORTAL</span>
+            </div>
+
+            <h1 style={{ fontSize: '1.65rem', color: 'var(--color-navy)', marginBottom: '0.5rem' }}>
+              {lang === 'te' ? 'అడ్మిన్ భద్రతా ప్రమాణీకరణ' : 'Admin Security Clearance'}
+            </h1>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', lineHeight: 1.5, marginBottom: '2rem' }}>
+              {lang === 'te'
+                ? 'రక్షిత పౌర గుర్తింపు పత్రాలు, ఆధార్ ధృవీకరణలు మరియు ప్రభుత్వ వివాద పరిష్కార రికార్డులను వీక్షించడానికి అధికారిక అడ్మిన్ పాస్‌కోడ్‌ను నమోదు చేయండి.'
+                : 'Enter your administrative security key to access confidential citizen KYC documents, worker verifications, and state audit logs.'}
+            </p>
+
+            {passcodeError && (
+              <div style={{
+                backgroundColor: '#FEE2E2',
+                border: '1px solid #EF4444',
+                color: '#991B1B',
+                padding: '0.75rem 1rem',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '0.85rem',
+                marginBottom: '1.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                textAlign: 'left'
+              }}>
+                <AlertTriangle size={18} style={{ flexShrink: 0 }} />
+                <span>{passcodeError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSecuritySubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div className="form-group" style={{ marginBottom: 0, textAlign: 'left' }}>
+                <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>{lang === 'te' ? 'అడ్మిన్ సెక్యూరిటీ కీ / పిన్' : 'Admin Security Key or PIN'} *</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowPasscode(!showPasscode)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--color-primary-dark)',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {showPasscode ? 'Hide' : 'Show'}
+                  </button>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showPasscode ? 'text' : 'password'}
+                    required
+                    autoFocus
+                    className="form-input"
+                    placeholder="Enter Master Security Key (e.g. APADMIN@2026)"
+                    value={passcode}
+                    onChange={(e) => setPasscode(e.target.value)}
+                    style={{
+                      letterSpacing: showPasscode ? 'normal' : '2px',
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      textAlign: 'center'
+                    }}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-primary btn-lg"
+                style={{ width: '100%', justifyContent: 'center', gap: '0.5rem', backgroundColor: '#10213F', color: '#FFFFFF' }}
+              >
+                <ShieldCheck size={18} />
+                <span>{lang === 'te' ? 'లాగిన్ & అన్‌లాక్ చేయండి' : 'Authenticate & Unlock Terminal'}</span>
+              </button>
+            </form>
+
+            <div style={{
+              marginTop: '1.5rem',
+              padding: '0.75rem',
+              backgroundColor: '#F8FAFC',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px dashed #CBD5E1',
+              fontSize: '0.78rem',
+              color: '#64748B'
+            }}>
+              🔑 <strong>Operator Quick Key</strong>: Use <code>APADMIN@2026</code> or PIN <code>9848</code> to gain administrative clearance.
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ paddingTop: '2.5rem', paddingBottom: '4.5rem' }}>
@@ -78,18 +239,38 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          <div style={{
-            backgroundColor: '#10213F',
-            color: '#FFFFFF',
-            padding: '0.6rem 1rem',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '0.82rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
-            <Lock size={15} style={{ color: 'var(--color-primary)' }} />
-            <span>Admin Auth: <strong>{currentUser?.email || "admin@skillconnect.gov.in"}</strong></span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{
+              backgroundColor: '#10213F',
+              color: '#FFFFFF',
+              padding: '0.6rem 1rem',
+              borderRadius: 'var(--radius-md)',
+              fontSize: '0.82rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <ShieldCheck size={16} style={{ color: 'var(--color-primary)' }} />
+              <span>Session: <strong>Authorized AP Admin</strong></span>
+            </div>
+
+            <button
+              onClick={lockAdmin}
+              className="btn btn-outline"
+              style={{
+                fontSize: '0.8rem',
+                padding: '0.55rem 0.9rem',
+                borderColor: '#EF4444',
+                color: '#EF4444',
+                gap: '0.4rem',
+                display: 'inline-flex',
+                alignItems: 'center'
+              }}
+              title="Lock Admin Terminal & Require Passcode Again"
+            >
+              <Lock size={14} />
+              <span>Lock Terminal</span>
+            </button>
           </div>
         </div>
 

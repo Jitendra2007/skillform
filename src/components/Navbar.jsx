@@ -60,14 +60,15 @@ export default function Navbar() {
             backgroundColor: 'var(--color-primary)',
             color: '#10213F',
             fontWeight: 700,
-            padding: '1px 6px',
+            padding: '1px 8px',
             borderRadius: '4px',
-            fontSize: '0.7rem'
+            fontSize: '0.7rem',
+            letterSpacing: '0.5px'
           }}>
-            COLLEGE PROJECT DEMO
+            ANDHRA PRADESH (AP)
           </span>
           <span style={{ color: '#94A3B8' }}>
-            Smart Community Labour Networking Platform • Switch Persona:
+            Smart Community Labour Platform • Switch Persona:
           </span>
         </div>
 
@@ -113,7 +114,7 @@ export default function Navbar() {
               transition: 'all 0.15s ease'
             }}
           >
-            🛡️ Admin Portal
+            🔒 Admin Portal (PIN Protected)
           </button>
         </div>
       </div>

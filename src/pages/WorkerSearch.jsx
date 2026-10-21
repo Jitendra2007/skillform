@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useData } from '../context/DataContext';
 import WorkerCard from '../components/WorkerCard';
+import { AP_CITIES } from '../lib/constants';
 import { 
   Search, 
   MapPin, 
@@ -163,10 +164,11 @@ export default function WorkerSearch() {
                 }}
               >
                 <option value="">{t('search.allLocations')}</option>
-                <option value="Vijayawada">Vijayawada (విజయవాడ)</option>
-                <option value="Guntur">Guntur (గుంటూరు)</option>
-                <option value="Mangalagiri">Mangalagiri (మంగళగిరి)</option>
-                <option value="Tenali">Tenali (తెనాలి)</option>
+                {AP_CITIES.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.nameEn} ({c.nameTe})
+                  </option>
+                ))}
               </select>
             </div>
 

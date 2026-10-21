@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useData } from '../context/DataContext';
 import WorkerCard from '../components/WorkerCard';
+import { AP_CITIES } from '../lib/constants';
 import { 
   Search, 
   MapPin, 
@@ -119,8 +120,8 @@ export default function Home() {
                 </div>
                 <div style={{ width: '1px', backgroundColor: 'var(--color-border)' }} />
                 <div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-navy)' }}>4 Cities</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Vijayawada & Capital Region</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-navy)' }}>26 Districts</div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>All Over Andhra Pradesh</div>
                 </div>
                 <div style={{ width: '1px', backgroundColor: 'var(--color-border)' }} />
                 <div>
@@ -176,10 +177,11 @@ export default function Home() {
                         onChange={(e) => setSelectedLocation(e.target.value)}
                       >
                         <option value="">{t('search.allLocations')}</option>
-                        <option value="Vijayawada">Vijayawada (విజయవాడ)</option>
-                        <option value="Guntur">Guntur (గుంటూరు)</option>
-                        <option value="Mangalagiri">Mangalagiri (మంగళగిరి)</option>
-                        <option value="Tenali">Tenali (తెనాలి)</option>
+                        {AP_CITIES.map(c => (
+                          <option key={c.id} value={c.id}>
+                            {c.nameEn} ({c.nameTe})
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -479,8 +481,8 @@ export default function Home() {
               </h2>
               <p style={{ color: '#94A3B8', fontSize: '0.95rem', lineHeight: 1.6 }}>
                 {lang === 'te'
-                  ? 'కస్టమర్ల నుండి నేరుగా కొటేషన్ అభ్యర్థనలు పొందండి, మీ నైపుణ్యాలను ప్రదర్శించండి మరియు స్థానిక పని అవకాశాలను సులభంగా పెంచుకోండి.'
-                  : 'Get booking requests directly in Vijayawada & Guntur, provide transparent quotations, and build a verified professional reputation.'}
+                  ? 'కస్టమర్ల నుండి నేరుగా కొటేషన్ అభ్యర్థనలు పొందండి, మీ నైపుణ్యాలను ప్రదర్శించండి మరియు ఆంధ్రప్రదేశ్ అంతటా మీ పని అవకాశాలను పెంచుకోండి.'
+                  : 'Get booking requests directly across all districts of Andhra Pradesh, provide transparent quotations, and build a verified professional reputation.'}
               </p>
             </div>
 

@@ -21,7 +21,7 @@ export const translations = {
       heroTitle: "Find Skilled Workers for Any Job, Anytime",
       heroSubtitle: "Connect directly with verified, local professionals in your community for quality service, transparent quotations, and reliable work.",
       searchSkillPlaceholder: "Select Skill / Category...",
-      searchLocationPlaceholder: "Location (e.g. Vijayawada, Guntur)...",
+      searchLocationPlaceholder: "Location across AP (e.g. Vijayawada, Vizag, Tirupati)...",
       searchDate: "Work Date",
       findWorkersBtn: "Find Workers",
       popularCategories: "Popular Service Categories",

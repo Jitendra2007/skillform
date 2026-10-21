@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initializeWorkers, initializeBookings, initializeVerifications, skillsList } from '../lib/demoData';
+import { getAvatarForGender } from '../lib/constants';
+import { db } from '../lib/firebase';
+import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
 
 const DataContext = createContext();
 
@@ -8,7 +11,7 @@ export function DataProvider({ children }) {
   const [bookings, setBookings] = useState(initializeBookings);
   const [verifications, setVerifications] = useState(initializeVerifications);
   const [complaints, setComplaints] = useState(() => {
-    const saved = localStorage.getItem('skillconnect_complaints_v1');
+    const saved = localStorage.getItem('skillconnect_complaints_v2');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -26,21 +29,21 @@ export function DataProvider({ children }) {
     ];
   });
 
-  // Sync to local storage
+  // Sync to local storage with v2 key
   useEffect(() => {
-    localStorage.setItem('skillconnect_workers_v1', JSON.stringify(workers));
+    localStorage.setItem('skillconnect_workers_v2', JSON.stringify(workers));
   }, [workers]);
 
   useEffect(() => {
-    localStorage.setItem('skillconnect_bookings_v1', JSON.stringify(bookings));
+    localStorage.setItem('skillconnect_bookings_v2', JSON.stringify(bookings));
   }, [bookings]);
 
   useEffect(() => {
-    localStorage.setItem('skillconnect_verifications_v1', JSON.stringify(verifications));
+    localStorage.setItem('skillconnect_verifications_v2', JSON.stringify(verifications));
   }, [verifications]);
 
   useEffect(() => {
-    localStorage.setItem('skillconnect_complaints_v1', JSON.stringify(complaints));
+    localStorage.setItem('skillconnect_complaints_v2', JSON.stringify(complaints));
   }, [complaints]);
 
   // Actions
@@ -149,12 +152,16 @@ export function DataProvider({ children }) {
     }
   };
 
-  const registerWorker = (newWorker) => {
+  const registerWorker = async (newWorker) => {
     const workerId = `w-${Date.now().toString().slice(-4)}`;
+    const gender = newWorker.gender || 'male';
+    const avatar = newWorker.avatar || getAvatarForGender(gender, Date.now());
+
     const fullWorker = {
       id: workerId,
       userId: `u-${Date.now().toString().slice(-4)}`,
       name: newWorker.fullName,
+      gender: gender,
       phone: newWorker.phone,
       email: newWorker.email || `${newWorker.fullName.toLowerCase().replace(/\s+/g, '')}@skillconnect.test`,
       bio: newWorker.bio,
@@ -166,7 +173,7 @@ export function DataProvider({ children }) {
       rating: 5.0,
       reviewCount: 0,
       indicativeWage: parseInt(newWorker.indicativeWage || '650', 10),
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80'
+      avatar: avatar
     };
 
     setWorkers(prev => [fullWorker, ...prev]);
@@ -177,14 +184,30 @@ export function DataProvider({ children }) {
       workerId: workerId,
       workerName: newWorker.fullName,
       trade: newWorker.skills?.map(s => s.nameEn).join(', ') || "General Labour",
-      area: newWorker.serviceArea,
+      area: newWorker.serviceArea || "Vijayawada",
       documentType: "Masked Aadhaar Proof",
       submittedDate: new Date().toISOString().split('T')[0],
       status: "pending",
-      filePreview: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80",
+      filePreview: avatar,
       notes: "Newly submitted registration document."
     };
     setVerifications(prev => [newVerif, ...prev]);
+
+    // Save to Firestore (graceful cloud sync)
+    try {
+      if (db) {
+        await addDoc(collection(db, 'workerProfiles'), {
+          ...fullWorker,
+          createdAt: new Date().toISOString()
+        });
+        await addDoc(collection(db, 'verificationSubmissions'), {
+          ...newVerif,
+          createdAt: new Date().toISOString()
+        });
+      }
+    } catch (err) {
+      console.warn("Firestore cloud sync notice (saved locally in persistent storage):", err.message);
+    }
 
     return fullWorker;
   };
