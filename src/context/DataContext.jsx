@@ -72,12 +72,17 @@ export function DataProvider({ children }) {
     try {
       const unsubWorkers = onSnapshot(collection(db, 'workerProfiles'), (snapshot) => {
         if (!snapshot.empty) {
-          const cloudWorkers = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
-          setWorkers(prev => {
-            const cloudIds = new Set(cloudWorkers.map(cw => cw.id));
-            const localOnly = prev.filter(w => !cloudIds.has(w.id));
-            return [...cloudWorkers, ...localOnly];
-          });
+          const cloudWorkers = snapshot.docs
+            .map(d => ({ ...d.data(), id: d.id }))
+            .filter(cw => cw && cw.name && !cw.name.includes('Cloud Firestore') && cw.skills && cw.skills.length > 0);
+          
+          if (cloudWorkers.length > 0) {
+            setWorkers(prev => {
+              const cloudIds = new Set(cloudWorkers.map(cw => cw.id));
+              const localOnly = prev.filter(w => !cloudIds.has(w.id));
+              return [...cloudWorkers, ...localOnly];
+            });
+          }
         }
       }, (err) => {
         console.info("Firestore workers sync using local persistence:", err.message);
@@ -119,9 +124,9 @@ export function DataProvider({ children }) {
     }
   }, []);
 
-  // Sync to local storage with v2 key
+  // Sync to local storage with v3 key
   useEffect(() => {
-    localStorage.setItem('skillconnect_workers_v2', JSON.stringify(workers));
+    localStorage.setItem('skillconnect_workers_v3', JSON.stringify(workers));
   }, [workers]);
 
   useEffect(() => {

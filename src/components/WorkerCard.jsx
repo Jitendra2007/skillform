@@ -11,17 +11,22 @@ export default function WorkerCard({ worker }) {
     <div className="card card-interactive" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Top Header with Image and Badges */}
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', marginBottom: '1rem' }}>
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative', width: '72px', height: '72px', flexShrink: 0 }}>
           <img
-            src={worker.avatar}
-            alt={worker.name}
+            src={worker.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80'}
+            alt={worker.name || 'Worker'}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80';
+            }}
             style={{
               width: '72px',
               height: '72px',
               borderRadius: '50%',
               objectFit: 'cover',
               border: '2px solid var(--color-primary-light)',
-              boxShadow: '0 2px 5px rgba(0,0,0,0.08)'
+              boxShadow: '0 2px 5px rgba(0,0,0,0.08)',
+              display: 'block'
             }}
           />
           {worker.verificationStatus === 'verified' && (
@@ -48,7 +53,15 @@ export default function WorkerCard({ worker }) {
 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <h3 style={{ fontSize: '1.15rem', color: 'var(--color-navy)', fontWeight: 700 }}>
+            <h3 style={{ 
+              fontSize: '1.15rem', 
+              color: 'var(--color-navy)', 
+              fontWeight: 700,
+              margin: 0,
+              lineHeight: 1.3,
+              overflowWrap: 'break-word',
+              wordBreak: 'break-word'
+            }}>
               {worker.name}
             </h3>
             {worker.verificationStatus === 'verified' ? (
@@ -62,16 +75,16 @@ export default function WorkerCard({ worker }) {
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--color-text-muted)', fontSize: '0.85rem', marginTop: '0.25rem' }}>
-            <MapPin size={14} style={{ color: 'var(--color-primary-dark)' }} />
-            <span>{worker.serviceArea}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--color-text-muted)', fontSize: '0.85rem', marginTop: '0.25rem', flexWrap: 'wrap' }}>
+            <MapPin size={14} style={{ color: 'var(--color-primary-dark)', flexShrink: 0 }} />
+            <span>{worker.serviceArea || 'Vijayawada'}</span>
             <span style={{ margin: '0 0.25rem' }}>•</span>
-            <Award size={14} />
-            <span>{worker.experienceYears} {t('search.experienceYears')}</span>
+            <Award size={14} style={{ flexShrink: 0 }} />
+            <span>{worker.experienceYears || '2'} {t('search.experienceYears')}</span>
           </div>
 
           <div style={{ marginTop: '0.4rem' }}>
-            <StarRating rating={worker.rating} count={worker.reviewCount} />
+            <StarRating rating={worker.rating || 4.8} count={worker.reviewCount || 10} />
           </div>
         </div>
       </div>

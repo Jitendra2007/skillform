@@ -1,7 +1,7 @@
 import rawSeed from '../../data/SkillConnect_Full_Demo_Seed.json';
 import { AP_CITIES, MALE_PORTRAITS, FEMALE_PORTRAITS } from './constants';
 
-const STORAGE_KEY_WORKERS = 'skillconnect_workers_v2';
+const STORAGE_KEY_WORKERS = 'skillconnect_workers_v3';
 const STORAGE_KEY_BOOKINGS = 'skillconnect_bookings_v2';
 const STORAGE_KEY_QUOTES = 'skillconnect_quotations_v2';
 const STORAGE_KEY_REVIEWS = 'skillconnect_reviews_v2';
@@ -47,10 +47,26 @@ export const skillsList = rawSeed.skills || [];
 
 // Helper to initialize normalized workers from raw seed
 export function initializeWorkers() {
+  try {
+    localStorage.removeItem('skillconnect_workers_v2');
+  } catch (e) {}
+
   const cached = localStorage.getItem(STORAGE_KEY_WORKERS);
   if (cached) {
     try {
-      return JSON.parse(cached);
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const sanitized = parsed.filter(w => 
+          w && 
+          w.name && 
+          !w.name.includes('Cloud Firestore') && 
+          w.skills && 
+          w.skills.length > 0
+        );
+        if (sanitized.length >= 20) {
+          return sanitized;
+        }
+      }
     } catch (e) {
       console.error("Failed to parse cached workers", e);
     }
