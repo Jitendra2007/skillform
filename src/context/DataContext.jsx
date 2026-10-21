@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initializeWorkers, initializeBookings, initializeVerifications, skillsList } from '../lib/demoData';
 import { getAvatarForGender } from '../lib/constants';
 import { db } from '../lib/firebase';
-import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc, onSnapshot } from 'firebase/firestore';
 
 const DataContext = createContext();
 
@@ -29,6 +29,45 @@ export function DataProvider({ children }) {
     ];
   });
 
+  // Real-time Firestore Cloud Listener for Workers (Syncs across phones & laptops)
+  useEffect(() => {
+    if (!db) return;
+    try {
+      const unsubWorkers = onSnapshot(collection(db, 'workerProfiles'), (snapshot) => {
+        if (!snapshot.empty) {
+          const cloudWorkers = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
+          setWorkers(prev => {
+            const cloudIds = new Set(cloudWorkers.map(cw => cw.id));
+            const localOnly = prev.filter(w => !cloudIds.has(w.id));
+            return [...cloudWorkers, ...localOnly];
+          });
+        }
+      }, (err) => {
+        console.info("Firestore workers sync using local persistence:", err.message);
+      });
+
+      const unsubBookings = onSnapshot(collection(db, 'bookings'), (snapshot) => {
+        if (!snapshot.empty) {
+          const cloudBookings = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
+          setBookings(prev => {
+            const cloudIds = new Set(cloudBookings.map(cb => cb.id));
+            const localOnly = prev.filter(b => !cloudIds.has(b.id));
+            return [...cloudBookings, ...localOnly];
+          });
+        }
+      }, (err) => {
+        console.info("Firestore bookings sync using local persistence:", err.message);
+      });
+
+      return () => {
+        unsubWorkers();
+        unsubBookings();
+      };
+    } catch (err) {
+      console.warn("Firestore listener setup error:", err);
+    }
+  }, []);
+
   // Sync to local storage with v2 key
   useEffect(() => {
     localStorage.setItem('skillconnect_workers_v2', JSON.stringify(workers));
@@ -47,15 +86,26 @@ export function DataProvider({ children }) {
   }, [complaints]);
 
   // Actions
-  const createBooking = (bookingData) => {
+  const createBooking = async (bookingData) => {
+    const bookingId = `b-${Date.now().toString().slice(-4)}`;
     const newBooking = {
-      id: `b-${Date.now().toString().slice(-4)}`,
+      id: bookingId,
       createdAt: new Date().toISOString().split('T')[0],
       status: 'requested',
       quotation: null,
       ...bookingData
     };
     setBookings(prev => [newBooking, ...prev]);
+
+    // Sync to Cloud Firestore
+    try {
+      if (db) {
+        await setDoc(doc(db, 'bookings', bookingId), newBooking);
+      }
+    } catch (err) {
+      console.warn("Firestore booking sync notice:", err.message);
+    }
+
     return newBooking;
   };
 
@@ -196,11 +246,11 @@ export function DataProvider({ children }) {
     // Save to Firestore (graceful cloud sync)
     try {
       if (db) {
-        await addDoc(collection(db, 'workerProfiles'), {
+        await setDoc(doc(db, 'workerProfiles', workerId), {
           ...fullWorker,
           createdAt: new Date().toISOString()
         });
-        await addDoc(collection(db, 'verificationSubmissions'), {
+        await setDoc(doc(db, 'verificationSubmissions', newVerif.id), {
           ...newVerif,
           createdAt: new Date().toISOString()
         });

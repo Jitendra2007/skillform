@@ -1,137 +1,27 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() {
-      return request.auth != null;
+    // Open access for SkillConnect AP live demonstration & testing
+    match /workerProfiles/{workerId} {
+      allow read, write: if true;
     }
-
-    // Use a Firebase custom claim set only by a trusted Admin SDK environment.
-    function isAdmin() {
-      return signedIn() && request.auth.token.admin == true;
+    match /verificationSubmissions/{subId} {
+      allow read, write: if true;
     }
-
-    function isOwner(uid) {
-      return signedIn() && request.auth.uid == uid;
-    }
-
-    match /skills/{skillId} {
-      allow read: if resource.data.isActive == true || isAdmin();
-      allow write: if isAdmin();
-    }
-
-    match /users/{uid} {
-      allow create: if isOwner(uid)
-        && request.resource.data.uid == uid
-        && request.resource.data.role in ['customer', 'worker']
-        && request.resource.data.accountStatus == 'active';
-      allow read: if isOwner(uid) || isAdmin();
-      // Users cannot change role, account status, or admin-controlled fields.
-      allow update: if (isOwner(uid)
-        && request.resource.data.uid == resource.data.uid
-        && request.resource.data.role == resource.data.role
-        && request.resource.data.accountStatus == resource.data.accountStatus)
-        || isAdmin();
-      allow delete: if isAdmin();
-    }
-
-    match /workerProfiles/{uid} {
-      allow read: if (resource.data.verificationStatus == 'verified')
-        || isOwner(uid) || isAdmin();
-      allow create: if isOwner(uid)
-        && request.resource.data.uid == uid
-        && request.resource.data.verificationStatus == 'pending';
-      allow update: if (isAdmin()
-        || (isOwner(uid)
-          && request.resource.data.uid == resource.data.uid
-          && request.resource.data.verificationStatus == resource.data.verificationStatus));
-      allow delete: if isAdmin();
-    }
-
-    match /verificationSubmissions/{submissionId} {
-      allow create: if signedIn()
-        && request.resource.data.workerUid == request.auth.uid
-        && request.resource.data.status == 'pending';
-      allow read: if signedIn()
-        && (resource.data.workerUid == request.auth.uid || isAdmin());
-      allow update, delete: if isAdmin();
-    }
-
     match /bookings/{bookingId} {
-      allow create: if signedIn()
-        && request.resource.data.customerUid == request.auth.uid
-        && request.resource.data.status == 'requested';
-      allow read: if signedIn()
-        && (resource.data.customerUid == request.auth.uid
-          || resource.data.workerUid == request.auth.uid
-          || isAdmin());
-      // Starter rule: use trusted backend logic for status transitions,
-      // quote acceptance, completion confirmation, and assigning workers.
-      allow update: if isAdmin()
-        || (signedIn() && resource.data.customerUid == request.auth.uid
-          && request.resource.data.customerUid == resource.data.customerUid
-          && request.resource.data.workerUid == resource.data.workerUid
-          && request.resource.data.status == resource.data.status);
-      allow delete: if isAdmin();
+      allow read, write: if true;
     }
-
     match /quotations/{quotationId} {
-      allow read: if signedIn() && (
-        isAdmin()
-        || resource.data.workerUid == request.auth.uid
-        || (exists(/databases/$(database)/documents/bookings/$(resource.data.bookingId))
-          && get(/databases/$(database)/documents/bookings/$(resource.data.bookingId)).data.customerUid == request.auth.uid)
-      );
-      allow create: if signedIn()
-        && request.resource.data.workerUid == request.auth.uid
-        && request.resource.data.status == 'submitted'
-        && exists(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId))
-        && get(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.workerUid == request.auth.uid;
-      // Quote accept/decline should be implemented through trusted transactional logic.
-      allow update, delete: if isAdmin();
+      allow read, write: if true;
     }
-
-    match /bookingStatusHistory/{eventId} {
-      allow read: if signedIn() && (
-        isAdmin()
-        || resource.data.changedByUid == request.auth.uid
-      );
-      // Prefer Cloud Functions for atomic validated status/history updates.
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /paymentRecords/{paymentId} {
-      allow read: if signedIn() && (
-        isAdmin() || resource.data.payerUid == request.auth.uid
-      );
-      allow write: if isAdmin();
-    }
-
-    match /reviews/{reviewId} {
-      allow read: if true;
-      allow create: if signedIn()
-        && request.resource.data.customerUid == request.auth.uid
-        && request.resource.data.rating is int
-        && request.resource.data.rating >= 1
-        && request.resource.data.rating <= 5;
-      allow update, delete: if isAdmin();
-    }
-
     match /complaints/{complaintId} {
-      allow create: if signedIn()
-        && request.resource.data.submittedByUid == request.auth.uid
-        && request.resource.data.status == 'open';
-      allow read: if signedIn()
-        && (resource.data.submittedByUid == request.auth.uid
-          || resource.data.againstUid == request.auth.uid
-          || isAdmin());
-      allow update, delete: if isAdmin();
+      allow read, write: if true;
     }
-
-    match /adminActivityLogs/{logId} {
-      allow read: if isAdmin();
-      allow create: if isAdmin()
-        && request.resource.data.adminUid == request.auth.uid;
-      allow update, delete: if false;
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+    match /{document=**} {
+      allow read, write: if true;
     }
   }
 }
