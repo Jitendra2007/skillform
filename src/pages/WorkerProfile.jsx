@@ -31,10 +31,19 @@ export default function WorkerProfile() {
   const [successBanner, setSuccessBanner] = useState(false);
 
   // Booking Form State
+  const [customerName, setCustomerName] = useState(currentUser?.name || 'Keerthana Rao');
+  const [customerPhone, setCustomerPhone] = useState(currentUser?.phone || '+91 98765 43210');
+  const [customerEmail, setCustomerEmail] = useState(currentUser?.email || 'keerthana@example.com');
   const [jobTitle, setJobTitle] = useState('');
   const [serviceAddress, setServiceAddress] = useState('Flat 402, Sai Residency, Benz Circle, Vijayawada');
   const [workDate, setWorkDate] = useState(new Date().toISOString().split('T')[0]);
   const [jobDescription, setJobDescription] = useState('');
+
+  useEffect(() => {
+    if (currentUser?.name) setCustomerName(currentUser.name);
+    if (currentUser?.phone) setCustomerPhone(currentUser.phone);
+    if (currentUser?.email) setCustomerEmail(currentUser.email);
+  }, [currentUser]);
 
   const worker = workers.find(w => w.id === id) || workers[0];
 
@@ -52,8 +61,10 @@ export default function WorkerProfile() {
   const handleBookingSubmit = (e) => {
     e.preventDefault();
     createBooking({
-      customerUid: currentUser?.uid || "cust-demo-1",
-      customerName: currentUser?.name || "Keerthana Rao",
+      customerUid: currentUser?.uid || `cust-${Date.now().toString().slice(-4)}`,
+      customerName: customerName || currentUser?.name || "Customer",
+      customerPhone: customerPhone || "+91 98765 43210",
+      customerEmail: customerEmail || "customer@skillconnect.local",
       workerUid: worker.id,
       workerName: worker.name,
       skillName: worker.skills?.[0]?.nameEn || "General Service",
@@ -378,6 +389,32 @@ export default function WorkerProfile() {
             </div>
 
             <form onSubmit={handleBookingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">{lang === 'te' ? 'మీ పేరు (కస్టమర్)' : 'Your Name (Customer)'} *</label>
+                  <input
+                    type="text"
+                    required
+                    className="form-input"
+                    placeholder="e.g. Keerthana Rao"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">{lang === 'te' ? 'ఫోన్ నంబర్ (కార్మికుడు కాల్ చేయడానికి)' : 'Phone Number (For Worker to Call)'} *</label>
+                  <input
+                    type="tel"
+                    required
+                    className="form-input"
+                    placeholder="+91 98765 43210"
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                  />
+                </div>
+              </div>
+
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label className="form-label">{t('profile.jobTitle')} *</label>
                 <input

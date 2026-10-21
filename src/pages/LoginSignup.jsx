@@ -12,6 +12,7 @@ export default function LoginSignup() {
   const [mode, setMode] = useState('login'); // 'login' | 'register'
   const [role, setRole] = useState('customer'); // 'customer' | 'worker'
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
 
@@ -20,13 +21,15 @@ export default function LoginSignup() {
     if (mode === 'login') {
       loginAs(role);
     } else {
-      setCurrentUser({
+      const newUser = {
         uid: `u-${Date.now()}`,
-        name: name || "New Member",
+        name: name || "Customer User",
+        phone: phone || "+91 98765 43210",
         email: email || "member@skillconnect.local",
         role: role,
         serviceArea: "Vijayawada"
-      });
+      };
+      setCurrentUser(newUser);
     }
 
     if (role === 'customer') navigate('/customer-dashboard');
@@ -201,17 +204,31 @@ export default function LoginSignup() {
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
             {mode === 'register' && (
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label">Full Name *</label>
-                <input
-                  type="text"
-                  required
-                  className="form-input"
-                  placeholder="e.g. Keerthana Rao"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
+              <>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    className="form-input"
+                    placeholder="e.g. Keerthana Rao"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">Phone Number (Workers will call you on this) *</label>
+                  <input
+                    type="tel"
+                    required
+                    className="form-input"
+                    placeholder="+91 98765 43210"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                </div>
+              </>
             )}
 
             <div className="form-group" style={{ marginBottom: 0 }}>

@@ -15,7 +15,8 @@ import {
   Play,
   X,
   TrendingUp,
-  DollarSign
+  DollarSign,
+  Phone
 } from 'lucide-react';
 
 export default function WorkerDashboard() {
@@ -245,8 +246,29 @@ export default function WorkerDashboard() {
                         <h3 style={{ fontSize: '1.2rem', color: 'var(--color-navy)' }}>{b.title}</h3>
                         <StatusBadge status={b.status} />
                       </div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
-                        Client: <strong>{b.customerName}</strong> • Date: <strong>{b.requestedDate}</strong>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap', marginTop: '0.2rem' }}>
+                        <span>Client: <strong>{b.customerName}</strong></span>
+                        <span>•</span>
+                        <span>Date: <strong>{b.requestedDate}</strong></span>
+                        <span>•</span>
+                        <a
+                          href={`tel:${b.customerPhone || '+91 98765 43210'}`}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.25rem',
+                            color: '#065F46',
+                            fontWeight: 700,
+                            backgroundColor: '#D1FAE5',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            textDecoration: 'none'
+                          }}
+                          title="Click to Call Customer on Phone"
+                        >
+                          <Phone size={12} />
+                          <span>Call: {b.customerPhone || '+91 98765 43210'}</span>
+                        </a>
                       </div>
                     </div>
 
@@ -290,8 +312,29 @@ export default function WorkerDashboard() {
                         <h3 style={{ fontSize: '1.2rem', color: 'var(--color-navy)' }}>{b.title}</h3>
                         <StatusBadge status={b.status} />
                       </div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
-                        Client: <strong>{b.customerName}</strong> • Scheduled Date: <strong>{b.requestedDate}</strong>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap', marginTop: '0.2rem' }}>
+                        <span>Client: <strong>{b.customerName}</strong></span>
+                        <span>•</span>
+                        <span>Scheduled: <strong>{b.requestedDate}</strong></span>
+                        <span>•</span>
+                        <a
+                          href={`tel:${b.customerPhone || '+91 98765 43210'}`}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.25rem',
+                            color: '#065F46',
+                            fontWeight: 700,
+                            backgroundColor: '#D1FAE5',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            textDecoration: 'none'
+                          }}
+                          title="Click to Call Customer Directly"
+                        >
+                          <Phone size={12} />
+                          <span>Call: {b.customerPhone || '+91 98765 43210'}</span>
+                        </a>
                       </div>
                     </div>
 
