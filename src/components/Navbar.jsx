@@ -44,7 +44,7 @@ export default function Navbar() {
       boxShadow: 'var(--shadow-sm)'
     }}>
       {/* Top Demo Bar for Reviewer / Examiner Testing */}
-      <div style={{
+      <div className="top-demo-bar" style={{
         backgroundColor: '#10213F',
         color: '#E2E8F0',
         padding: '0.35rem 1rem',
@@ -53,68 +53,68 @@ export default function Navbar() {
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '0.5rem'
+        gap: '0.4rem'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{
             backgroundColor: 'var(--color-primary)',
             color: '#10213F',
             fontWeight: 700,
-            padding: '1px 8px',
+            padding: '2px 8px',
             borderRadius: '4px',
             fontSize: '0.7rem',
             letterSpacing: '0.5px'
           }}>
-            ANDHRA PRADESH (AP)
+            AP STATE
           </span>
-          <span style={{ color: '#94A3B8' }}>
+          <span className="demo-bar-text" style={{ color: '#94A3B8', fontSize: '0.72rem' }}>
             Smart Community Labour Platform • Switch Persona:
           </span>
         </div>
 
         {/* 1-Click Role Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'nowrap', overflowX: 'auto' }}>
           <button
             onClick={() => handleRoleSwitch('customer')}
             style={{
-              padding: '2px 8px',
+              padding: '2px 7px',
               borderRadius: '4px',
-              fontSize: '0.72rem',
+              fontSize: '0.7rem',
               fontWeight: currentUser?.role === 'customer' ? 700 : 500,
               backgroundColor: currentUser?.role === 'customer' ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)',
               color: currentUser?.role === 'customer' ? '#10213F' : '#FFFFFF',
-              transition: 'all 0.15s ease'
+              whiteSpace: 'nowrap'
             }}
           >
-            👤 Customer View
+            👤 Customer
           </button>
           <button
             onClick={() => handleRoleSwitch('worker')}
             style={{
-              padding: '2px 8px',
+              padding: '2px 7px',
               borderRadius: '4px',
-              fontSize: '0.72rem',
+              fontSize: '0.7rem',
               fontWeight: currentUser?.role === 'worker' ? 700 : 500,
               backgroundColor: currentUser?.role === 'worker' ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)',
               color: currentUser?.role === 'worker' ? '#10213F' : '#FFFFFF',
-              transition: 'all 0.15s ease'
+              whiteSpace: 'nowrap'
             }}
           >
-            🔨 Worker View
+            🔨 Worker
           </button>
           <button
             onClick={() => handleRoleSwitch('admin')}
             style={{
-              padding: '2px 8px',
+              padding: '2px 7px',
               borderRadius: '4px',
-              fontSize: '0.72rem',
+              fontSize: '0.7rem',
               fontWeight: currentUser?.role === 'admin' ? 700 : 500,
               backgroundColor: currentUser?.role === 'admin' ? '#F59E0B' : 'rgba(255,255,255,0.1)',
               color: currentUser?.role === 'admin' ? '#10213F' : '#FFFFFF',
-              transition: 'all 0.15s ease'
+              whiteSpace: 'nowrap'
             }}
           >
-            🔒 Admin Portal (PIN Protected)
+            🔒 Admin
           </button>
         </div>
       </div>
@@ -236,7 +236,7 @@ export default function Navbar() {
 
           {/* User Auth or Dashboard Button */}
           {currentUser ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <Link
                 to={
                   currentUser.role === 'customer'
@@ -246,12 +246,12 @@ export default function Navbar() {
                     : '/admin-dashboard'
                 }
                 className="btn btn-primary btn-sm"
-                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.35rem 0.6rem' }}
               >
                 {currentUser.role === 'customer' && <User size={15} />}
                 {currentUser.role === 'worker' && <Briefcase size={15} />}
                 {currentUser.role === 'admin' && <ShieldAlert size={15} />}
-                <span>
+                <span className="nav-dashboard-text">
                   {currentUser.role === 'customer'
                     ? t('nav.customerDashboard')
                     : currentUser.role === 'worker'
@@ -270,11 +270,11 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Link to="/login" className="btn btn-outline btn-sm">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Link to="/login" className="btn btn-outline btn-sm" style={{ padding: '0.35rem 0.6rem' }}>
                 {t('nav.login')}
               </Link>
-              <Link to="/register-worker" className="btn btn-primary btn-sm">
+              <Link to="/register-worker" className="btn btn-primary btn-sm mobile-hide-sm" style={{ padding: '0.35rem 0.6rem' }}>
                 {t('nav.register')}
               </Link>
             </div>
@@ -361,8 +361,19 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Media query styling for desktop nav */}
+      {/* Media query styling for responsive nav */}
       <style>{`
+        @media (max-width: 640px) {
+          .demo-bar-text {
+            display: none !important;
+          }
+          .nav-dashboard-text {
+            display: none !important;
+          }
+          .mobile-hide-sm {
+            display: none !important;
+          }
+        }
         @media (min-width: 820px) {
           .desktop-nav {
             display: flex !important;

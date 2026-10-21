@@ -302,7 +302,47 @@ input, select, textarea {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .grid-3, .grid-4 {
-    grid-template-columns: 1fr;
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+  }
+
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .card {
+    padding: 1.15rem;
+    border-radius: var(--radius-md);
+  }
+
+  .grid-2, .grid-3, .grid-4 {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+
+  /* Prevent iOS Safari from auto-zooming inputs under 16px */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  .desktop-nav {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .desktop-nav {
+    display: flex !important;
+  }
+
+  .mobile-only {
+    display: none !important;
   }
 }

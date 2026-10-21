@@ -6,6 +6,7 @@ import { DataProvider } from './context/DataContext';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import MobileBottomNav from './components/MobileBottomNav';
 
 import Home from './pages/Home';
 import WorkerSearch from './pages/WorkerSearch';
@@ -40,6 +41,7 @@ export default function App() {
                 </Routes>
               </main>
               <Footer />
+              <MobileBottomNav />
             </div>
           </DataProvider>
         </AuthProvider>

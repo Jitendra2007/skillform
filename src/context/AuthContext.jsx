@@ -73,14 +73,34 @@ export function AuthProvider({ children }) {
   }, []);
 
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(() => {
-    return sessionStorage.getItem('skillconnect_admin_unlocked') === 'true';
+    try {
+      return sessionStorage.getItem('skillconnect_admin_unlocked') === 'true';
+    } catch (e) {
+      return false;
+    }
   });
+
+  const loginAs = (role) => {
+    const user = DEMO_USERS[role] || DEMO_USERS.customer;
+    setCurrentUser(user);
+  };
+
+  const logout = async () => {
+    try {
+      await fbSignOut(auth);
+    } catch (e) {
+      // Ignored for offline demo
+    }
+    setCurrentUser(null);
+  };
 
   const unlockAdmin = (passcode) => {
     const clean = (passcode || '').trim();
     if (clean.toUpperCase() === 'APADMIN@2026' || clean === '9848' || clean === 'admin123') {
       setIsAdminUnlocked(true);
-      sessionStorage.setItem('skillconnect_admin_unlocked', 'true');
+      try {
+        sessionStorage.setItem('skillconnect_admin_unlocked', 'true');
+      } catch (e) {}
       loginAs('admin');
       return { success: true };
     }
@@ -92,7 +112,9 @@ export function AuthProvider({ children }) {
 
   const lockAdmin = () => {
     setIsAdminUnlocked(false);
-    sessionStorage.removeItem('skillconnect_admin_unlocked');
+    try {
+      sessionStorage.removeItem('skillconnect_admin_unlocked');
+    } catch (e) {}
     loginAs('customer');
   };
 
