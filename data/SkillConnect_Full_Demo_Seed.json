@@ -1,0 +1,1348 @@
+{
+  "notice": "Entirely fictional demo data. This JSON is for UI development only; it does not create Supabase Auth users. All document paths are null and no Aadhaar data is included.",
+  "skills": [
+    {
+      "id": 1,
+      "name_en": "Masonry",
+      "name_te": "మేసన్",
+      "is_active": true
+    },
+    {
+      "id": 2,
+      "name_en": "Plumbing",
+      "name_te": "ప్లంబింగ్",
+      "is_active": true
+    },
+    {
+      "id": 3,
+      "name_en": "Carpentry",
+      "name_te": "వడ్రంగి పని",
+      "is_active": true
+    },
+    {
+      "id": 4,
+      "name_en": "Electrical",
+      "name_te": "ఎలక్ట్రికల్",
+      "is_active": true
+    },
+    {
+      "id": 5,
+      "name_en": "Painting",
+      "name_te": "పెయింటింగ్",
+      "is_active": true
+    },
+    {
+      "id": 6,
+      "name_en": "Cleaning",
+      "name_te": "శుభ్రపరచడం",
+      "is_active": true
+    },
+    {
+      "id": 7,
+      "name_en": "Moving",
+      "name_te": "రవాణా / షిఫ్టింగ్",
+      "is_active": true
+    },
+    {
+      "id": 8,
+      "name_en": "Gardening",
+      "name_te": "తోటపని",
+      "is_active": true
+    },
+    {
+      "id": 9,
+      "name_en": "Mechanic",
+      "name_te": "మెకానిక్",
+      "is_active": true
+    },
+    {
+      "id": 10,
+      "name_en": "Other Services",
+      "name_te": "ఇతర సేవలు",
+      "is_active": true
+    }
+  ],
+  "profiles": [
+    {
+      "id": "ac572fd6-95ad-5a5d-a2cd-8ad589d787db",
+      "role": "worker",
+      "full_name": "Aarav Reddy",
+      "phone": "9000000001",
+      "email": "demo01@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-02T10:00:00+00:00"
+    },
+    {
+      "id": "9c13a56b-1ce7-52fe-9562-e19bc00b3b98",
+      "role": "worker",
+      "full_name": "Sravani Kumar",
+      "phone": "9000000002",
+      "email": "demo02@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-03T10:00:00+00:00"
+    },
+    {
+      "id": "1dfa5eba-2ee9-5b57-823f-78511def5cc2",
+      "role": "worker",
+      "full_name": "Kiran Naidu",
+      "phone": "9000000003",
+      "email": "demo03@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "te",
+      "created_at": "2026-09-04T10:00:00+00:00"
+    },
+    {
+      "id": "60acf6df-3a8c-5793-8ed6-97e26fb60386",
+      "role": "worker",
+      "full_name": "Lakshmi Devi",
+      "phone": "9000000004",
+      "email": "demo04@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-05T10:00:00+00:00"
+    },
+    {
+      "id": "63cd72e2-267b-569b-aa40-d2e5a9cba686",
+      "role": "worker",
+      "full_name": "Ravi Teja",
+      "phone": "9000000005",
+      "email": "demo05@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-06T10:00:00+00:00"
+    },
+    {
+      "id": "58256f9a-8163-5e5c-bda2-78d9ac5095c3",
+      "role": "worker",
+      "full_name": "Meena Kumari",
+      "phone": "9000000006",
+      "email": "demo06@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "te",
+      "created_at": "2026-09-07T10:00:00+00:00"
+    },
+    {
+      "id": "51949b69-2130-5677-bc75-b7a07706a502",
+      "role": "worker",
+      "full_name": "Sai Charan",
+      "phone": "9000000007",
+      "email": "demo07@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-08T10:00:00+00:00"
+    },
+    {
+      "id": "fc81387a-b03a-53a4-ba72-46f44ae46a66",
+      "role": "worker",
+      "full_name": "Prasad Rao",
+      "phone": "9000000008",
+      "email": "demo08@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-09T10:00:00+00:00"
+    },
+    {
+      "id": "b4b67d8d-ce48-53ec-97fc-7cd30c0a9390",
+      "role": "worker",
+      "full_name": "Anusha Patel",
+      "phone": "9000000009",
+      "email": "demo09@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "te",
+      "created_at": "2026-09-10T10:00:00+00:00"
+    },
+    {
+      "id": "f0312702-d4de-5f3c-bc8c-90cda501cbb4",
+      "role": "worker",
+      "full_name": "Venkatesh Babu",
+      "phone": "9000000010",
+      "email": "demo10@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "f14e7db6-d79c-5e44-b50a-fe6a2396cce4",
+      "role": "worker",
+      "full_name": "Divya Sri",
+      "phone": "9000000011",
+      "email": "demo11@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-12T10:00:00+00:00"
+    },
+    {
+      "id": "480bd10e-7879-5002-a716-be9f6fc4dffb",
+      "role": "worker",
+      "full_name": "Mahesh Yadav",
+      "phone": "9000000012",
+      "email": "demo12@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "te",
+      "created_at": "2026-09-13T10:00:00+00:00"
+    },
+    {
+      "id": "a7622b67-e649-515f-b4e7-a9666228e00a",
+      "role": "worker",
+      "full_name": "Pooja Rani",
+      "phone": "9000000013",
+      "email": "demo13@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-14T10:00:00+00:00"
+    },
+    {
+      "id": "e3648403-976d-5185-a579-0a965b5786ca",
+      "role": "worker",
+      "full_name": "Naveen Kumar",
+      "phone": "9000000014",
+      "email": "demo14@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-15T10:00:00+00:00"
+    },
+    {
+      "id": "c6c3ff4d-7022-525a-b8d4-f222d5740e09",
+      "role": "worker",
+      "full_name": "Bhavani Shankar",
+      "phone": "9000000015",
+      "email": "demo15@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "te",
+      "created_at": "2026-09-16T10:00:00+00:00"
+    },
+    {
+      "id": "621c8a16-b041-5506-b5e4-efce8843cd73",
+      "role": "worker",
+      "full_name": "Rahul Varma",
+      "phone": "9000000016",
+      "email": "demo16@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-17T10:00:00+00:00"
+    },
+    {
+      "id": "d4864dfb-9c9a-5702-bcc5-38344a819bef",
+      "role": "worker",
+      "full_name": "Chandrika Rao",
+      "phone": "9000000017",
+      "email": "demo17@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-18T10:00:00+00:00"
+    },
+    {
+      "id": "9c552b1c-04ec-5198-81a4-a5e77e54c442",
+      "role": "worker",
+      "full_name": "Imran Ali",
+      "phone": "9000000018",
+      "email": "demo18@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "te",
+      "created_at": "2026-09-19T10:00:00+00:00"
+    },
+    {
+      "id": "579b3498-3177-5571-aa04-fe69326155b4",
+      "role": "worker",
+      "full_name": "Harika Reddy",
+      "phone": "9000000019",
+      "email": "demo19@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-20T10:00:00+00:00"
+    },
+    {
+      "id": "9e8d1fad-16fd-52f1-960e-5031951380f5",
+      "role": "worker",
+      "full_name": "Suresh Babu",
+      "phone": "9000000020",
+      "email": "demo20@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-21T10:00:00+00:00"
+    },
+    {
+      "id": "070bf1ef-0197-5754-a0dc-4fcd47f87f3a",
+      "role": "customer",
+      "full_name": "Nikhil Sharma",
+      "phone": "9000000021",
+      "email": "demo21@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "te",
+      "created_at": "2026-09-22T10:00:00+00:00"
+    },
+    {
+      "id": "f10e8e1f-d7ab-54bd-ba12-d015faa3b6e5",
+      "role": "customer",
+      "full_name": "Mounika Goud",
+      "phone": "9000000022",
+      "email": "demo22@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-23T10:00:00+00:00"
+    },
+    {
+      "id": "3f967480-2458-5955-bd7f-2842581a2a59",
+      "role": "customer",
+      "full_name": "Praveen Kumar",
+      "phone": "9000000023",
+      "email": "demo23@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-24T10:00:00+00:00"
+    },
+    {
+      "id": "2d039072-bd57-5e61-814f-e68a54c3ae06",
+      "role": "customer",
+      "full_name": "Keerthana Rao",
+      "phone": "9000000024",
+      "email": "demo24@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "te",
+      "created_at": "2026-09-25T10:00:00+00:00"
+    },
+    {
+      "id": "16cdf7b2-1df0-5470-a27c-02aab3a3d758",
+      "role": "customer",
+      "full_name": "Abdul Rahman",
+      "phone": "9000000025",
+      "email": "demo25@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-26T10:00:00+00:00"
+    },
+    {
+      "id": "89770f53-d268-5412-b082-078369a44528",
+      "role": "customer",
+      "full_name": "Sowmya Lakshmi",
+      "phone": "9000000026",
+      "email": "demo26@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-27T10:00:00+00:00"
+    },
+    {
+      "id": "0b2c5330-c60e-599d-9d99-ec54ccabc79b",
+      "role": "customer",
+      "full_name": "Tejaswini P",
+      "phone": "9000000027",
+      "email": "demo27@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "te",
+      "created_at": "2026-09-28T10:00:00+00:00"
+    },
+    {
+      "id": "9a23336d-b97a-5f46-867e-fc1a95861db7",
+      "role": "customer",
+      "full_name": "Manoj Krishna",
+      "phone": "9000000028",
+      "email": "demo28@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-01T10:00:00+00:00"
+    },
+    {
+      "id": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "role": "customer",
+      "full_name": "Farah Begum",
+      "phone": "9000000029",
+      "email": "demo29@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "en",
+      "created_at": "2026-09-02T10:00:00+00:00"
+    },
+    {
+      "id": "c683dde0-4458-5837-9e80-bc009dd8e8f6",
+      "role": "customer",
+      "full_name": "Vamsi Krishna",
+      "phone": "9000000030",
+      "email": "demo30@skillconnect.example",
+      "avatar_path": null,
+      "preferred_language": "te",
+      "created_at": "2026-09-03T10:00:00+00:00"
+    }
+  ],
+  "worker_profiles": [
+    {
+      "id": "61750a2a-c9ff-56e2-87f2-ab5fca4a64d2",
+      "user_id": "ac572fd6-95ad-5a5d-a2cd-8ad589d787db",
+      "bio": "Demo masonry professional serving Vijayawada and nearby areas.",
+      "experience_years": 5,
+      "service_area": "Vijayawada",
+      "availability_status": "available",
+      "verification_status": "verified"
+    },
+    {
+      "id": "f521b131-6aca-512a-9564-766d4c5405c6",
+      "user_id": "9c13a56b-1ce7-52fe-9562-e19bc00b3b98",
+      "bio": "Demo plumbing professional serving Vijayawada and nearby areas.",
+      "experience_years": 4,
+      "service_area": "Vijayawada",
+      "availability_status": "available",
+      "verification_status": "verified"
+    },
+    {
+      "id": "8a82dc00-7ac5-5c6e-b277-744d712e949a",
+      "user_id": "1dfa5eba-2ee9-5b57-823f-78511def5cc2",
+      "bio": "Demo electrical professional serving Guntur and nearby areas.",
+      "experience_years": 3,
+      "service_area": "Guntur",
+      "availability_status": "available",
+      "verification_status": "verified"
+    },
+    {
+      "id": "944afb6e-5c67-504d-b3cd-03a0f1db5c0b",
+      "user_id": "60acf6df-3a8c-5793-8ed6-97e26fb60386",
+      "bio": "Demo painting professional serving Vijayawada and nearby areas.",
+      "experience_years": 6,
+      "service_area": "Vijayawada",
+      "availability_status": "available",
+      "verification_status": "verified"
+    },
+    {
+      "id": "0ecba436-7bdf-546a-af2b-3634840d0635",
+      "user_id": "63cd72e2-267b-569b-aa40-d2e5a9cba686",
+      "bio": "Demo carpentry professional serving Tenali and nearby areas.",
+      "experience_years": 3,
+      "service_area": "Tenali",
+      "availability_status": "busy",
+      "verification_status": "verified"
+    },
+    {
+      "id": "9d3574e3-fd70-5f27-8334-59795ef9c412",
+      "user_id": "58256f9a-8163-5e5c-bda2-78d9ac5095c3",
+      "bio": "Demo cleaning professional serving Vijayawada and nearby areas.",
+      "experience_years": 5,
+      "service_area": "Vijayawada",
+      "availability_status": "available",
+      "verification_status": "verified"
+    },
+    {
+      "id": "da82e3d7-39b5-5161-912e-0153a74c5fbb",
+      "user_id": "51949b69-2130-5677-bc75-b7a07706a502",
+      "bio": "Demo gardening professional serving Mangalagiri and nearby areas.",
+      "experience_years": 2,
+      "service_area": "Mangalagiri",
+      "availability_status": "available",
+      "verification_status": "pending"
+    },
+    {
+      "id": "4eb75102-f525-5bcf-8a4e-0723fbfe8f48",
+      "user_id": "fc81387a-b03a-53a4-ba72-46f44ae46a66",
+      "bio": "Demo moving professional serving Guntur and nearby areas.",
+      "experience_years": 2,
+      "service_area": "Guntur",
+      "availability_status": "available",
+      "verification_status": "verified"
+    },
+    {
+      "id": "b11e6ab4-d969-5597-b4eb-96189fb161aa",
+      "user_id": "b4b67d8d-ce48-53ec-97fc-7cd30c0a9390",
+      "bio": "Demo plumbing professional serving Mangalagiri and nearby areas.",
+      "experience_years": 4,
+      "service_area": "Mangalagiri",
+      "availability_status": "available",
+      "verification_status": "verified"
+    },
+    {
+      "id": "a442a2c9-9d55-5377-8520-2c3f3d1274e9",
+      "user_id": "f0312702-d4de-5f3c-bc8c-90cda501cbb4",
+      "bio": "Demo electrical professional serving Vijayawada and nearby areas.",
+      "experience_years": 6,
+      "service_area": "Vijayawada",
+      "availability_status": "busy",
+      "verification_status": "verified"
+    },
+    {
+      "id": "3a8c16f5-b65a-5222-b9d2-3b50efe3dd9e",
+      "user_id": "f14e7db6-d79c-5e44-b50a-fe6a2396cce4",
+      "bio": "Demo cleaning professional serving Tenali and nearby areas.",
+      "experience_years": 2,
+      "service_area": "Tenali",
+      "availability_status": "available",
+      "verification_status": "verified"
+    },
+    {
+      "id": "4ca1ec7c-06bc-5933-ab60-5a45ef0a8218",
+      "user_id": "480bd10e-7879-5002-a716-be9f6fc4dffb",
+      "bio": "Demo masonry professional serving Guntur and nearby areas.",
+      "experience_years": 3,
+      "service_area": "Guntur",
+      "availability_status": "available",
+      "verification_status": "pending"
+    },
+    {
+      "id": "6970bcc9-d9e6-5855-ae96-a22ada854a9a",
+      "user_id": "a7622b67-e649-515f-b4e7-a9666228e00a",
+      "bio": "Demo painting professional serving Vijayawada and nearby areas.",
+      "experience_years": 4,
+      "service_area": "Vijayawada",
+      "availability_status": "available",
+      "verification_status": "verified"
+    },
+    {
+      "id": "9c8d5cb6-9acd-5330-8286-4aa5bf874925",
+      "user_id": "e3648403-976d-5185-a579-0a965b5786ca",
+      "bio": "Demo carpentry professional serving Mangalagiri and nearby areas.",
+      "experience_years": 3,
+      "service_area": "Mangalagiri",
+      "availability_status": "available",
+      "verification_status": "verified"
+    },
+    {
+      "id": "355a95f2-8b4e-5719-a47f-1a7252ed1048",
+      "user_id": "c6c3ff4d-7022-525a-b8d4-f222d5740e09",
+      "bio": "Demo gardening professional serving Tenali and nearby areas.",
+      "experience_years": 1,
+      "service_area": "Tenali",
+      "availability_status": "unavailable",
+      "verification_status": "rejected"
+    },
+    {
+      "id": "bdd024af-8c04-55ce-8e34-c73eb3116844",
+      "user_id": "621c8a16-b041-5506-b5e4-efce8843cd73",
+      "bio": "Demo electrical professional serving Guntur and nearby areas.",
+      "experience_years": 4,
+      "service_area": "Guntur",
+      "availability_status": "available",
+      "verification_status": "verified"
+    },
+    {
+      "id": "55682c9c-9456-5a08-a4c5-007aa550afe8",
+      "user_id": "d4864dfb-9c9a-5702-bcc5-38344a819bef",
+      "bio": "Demo plumbing professional serving Vijayawada and nearby areas.",
+      "experience_years": 2,
+      "service_area": "Vijayawada",
+      "availability_status": "available",
+      "verification_status": "verified"
+    },
+    {
+      "id": "32743351-e48a-5d10-94aa-5a8139cb5a65",
+      "user_id": "9c552b1c-04ec-5198-81a4-a5e77e54c442",
+      "bio": "Demo moving professional serving Mangalagiri and nearby areas.",
+      "experience_years": 2,
+      "service_area": "Mangalagiri",
+      "availability_status": "available",
+      "verification_status": "pending"
+    },
+    {
+      "id": "a31f85bf-6c8a-54c4-8774-8f3f2faf3085",
+      "user_id": "579b3498-3177-5571-aa04-fe69326155b4",
+      "bio": "Demo painting professional serving Tenali and nearby areas.",
+      "experience_years": 5,
+      "service_area": "Tenali",
+      "availability_status": "available",
+      "verification_status": "verified"
+    },
+    {
+      "id": "f724a09d-7252-59a8-b944-a9000de98142",
+      "user_id": "9e8d1fad-16fd-52f1-960e-5031951380f5",
+      "bio": "Demo masonry professional serving Vijayawada and nearby areas.",
+      "experience_years": 4,
+      "service_area": "Vijayawada",
+      "availability_status": "busy",
+      "verification_status": "verified"
+    }
+  ],
+  "worker_skills": [
+    {
+      "worker_id": "61750a2a-c9ff-56e2-87f2-ab5fca4a64d2",
+      "skill_id": 1,
+      "years_experience": 5
+    },
+    {
+      "worker_id": "f521b131-6aca-512a-9564-766d4c5405c6",
+      "skill_id": 2,
+      "years_experience": 4
+    },
+    {
+      "worker_id": "8a82dc00-7ac5-5c6e-b277-744d712e949a",
+      "skill_id": 4,
+      "years_experience": 3
+    },
+    {
+      "worker_id": "944afb6e-5c67-504d-b3cd-03a0f1db5c0b",
+      "skill_id": 5,
+      "years_experience": 6
+    },
+    {
+      "worker_id": "0ecba436-7bdf-546a-af2b-3634840d0635",
+      "skill_id": 3,
+      "years_experience": 3
+    },
+    {
+      "worker_id": "9d3574e3-fd70-5f27-8334-59795ef9c412",
+      "skill_id": 6,
+      "years_experience": 5
+    },
+    {
+      "worker_id": "da82e3d7-39b5-5161-912e-0153a74c5fbb",
+      "skill_id": 8,
+      "years_experience": 2
+    },
+    {
+      "worker_id": "4eb75102-f525-5bcf-8a4e-0723fbfe8f48",
+      "skill_id": 7,
+      "years_experience": 2
+    },
+    {
+      "worker_id": "b11e6ab4-d969-5597-b4eb-96189fb161aa",
+      "skill_id": 2,
+      "years_experience": 4
+    },
+    {
+      "worker_id": "a442a2c9-9d55-5377-8520-2c3f3d1274e9",
+      "skill_id": 4,
+      "years_experience": 6
+    },
+    {
+      "worker_id": "3a8c16f5-b65a-5222-b9d2-3b50efe3dd9e",
+      "skill_id": 6,
+      "years_experience": 2
+    },
+    {
+      "worker_id": "4ca1ec7c-06bc-5933-ab60-5a45ef0a8218",
+      "skill_id": 1,
+      "years_experience": 3
+    },
+    {
+      "worker_id": "6970bcc9-d9e6-5855-ae96-a22ada854a9a",
+      "skill_id": 5,
+      "years_experience": 4
+    },
+    {
+      "worker_id": "9c8d5cb6-9acd-5330-8286-4aa5bf874925",
+      "skill_id": 3,
+      "years_experience": 3
+    },
+    {
+      "worker_id": "355a95f2-8b4e-5719-a47f-1a7252ed1048",
+      "skill_id": 8,
+      "years_experience": 1
+    },
+    {
+      "worker_id": "bdd024af-8c04-55ce-8e34-c73eb3116844",
+      "skill_id": 4,
+      "years_experience": 4
+    },
+    {
+      "worker_id": "55682c9c-9456-5a08-a4c5-007aa550afe8",
+      "skill_id": 2,
+      "years_experience": 2
+    },
+    {
+      "worker_id": "32743351-e48a-5d10-94aa-5a8139cb5a65",
+      "skill_id": 7,
+      "years_experience": 2
+    },
+    {
+      "worker_id": "a31f85bf-6c8a-54c4-8774-8f3f2faf3085",
+      "skill_id": 5,
+      "years_experience": 5
+    },
+    {
+      "worker_id": "f724a09d-7252-59a8-b944-a9000de98142",
+      "skill_id": 1,
+      "years_experience": 4
+    }
+  ],
+  "verification_submissions": [
+    {
+      "id": "9323abe7-4d65-5f26-a031-8a9fbdbc527b",
+      "worker_id": "61750a2a-c9ff-56e2-87f2-ab5fca4a64d2",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "4c983e8b-41f8-541d-ac24-2cc6e125da45",
+      "worker_id": "f521b131-6aca-512a-9564-766d4c5405c6",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "f142491b-a494-5128-abdd-5782de23c0d5",
+      "worker_id": "8a82dc00-7ac5-5c6e-b277-744d712e949a",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "b4660cff-659b-5def-94b2-56f3774f2031",
+      "worker_id": "944afb6e-5c67-504d-b3cd-03a0f1db5c0b",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "154bab04-1ae2-56d4-a3c0-95686d414e7e",
+      "worker_id": "0ecba436-7bdf-546a-af2b-3634840d0635",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "58eb7a0e-e7a4-5be7-897b-0f4346e1163e",
+      "worker_id": "9d3574e3-fd70-5f27-8334-59795ef9c412",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "e4fa6b80-b382-548d-b271-17fd2089c792",
+      "worker_id": "da82e3d7-39b5-5161-912e-0153a74c5fbb",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "pending",
+      "reviewed_by": null,
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": null
+    },
+    {
+      "id": "bba7c7d0-c90d-536d-a44f-f6679eff589f",
+      "worker_id": "4eb75102-f525-5bcf-8a4e-0723fbfe8f48",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "149b7723-89e0-5546-a540-324248d40fb9",
+      "worker_id": "b11e6ab4-d969-5597-b4eb-96189fb161aa",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "e0cfe89b-4ec3-54c0-9f1b-b719e24f435b",
+      "worker_id": "a442a2c9-9d55-5377-8520-2c3f3d1274e9",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "bbfaba38-f07e-569a-8a59-6f47056b276c",
+      "worker_id": "3a8c16f5-b65a-5222-b9d2-3b50efe3dd9e",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "284e6f31-8a19-51da-a520-075c269f5568",
+      "worker_id": "4ca1ec7c-06bc-5933-ab60-5a45ef0a8218",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "pending",
+      "reviewed_by": null,
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": null
+    },
+    {
+      "id": "6f0ded0c-20c3-5356-ad8a-ab5e35d310c9",
+      "worker_id": "6970bcc9-d9e6-5855-ae96-a22ada854a9a",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "978793d1-512a-54a9-941e-0ef0435a7031",
+      "worker_id": "9c8d5cb6-9acd-5330-8286-4aa5bf874925",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "b036661d-f487-5a05-8540-c6bb94bb43dc",
+      "worker_id": "355a95f2-8b4e-5719-a47f-1a7252ed1048",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "rejected",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "6d0330c7-d4af-5f9b-be63-faf5349770e9",
+      "worker_id": "bdd024af-8c04-55ce-8e34-c73eb3116844",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "d950ac26-68a6-54d3-802c-1e05b4db4b39",
+      "worker_id": "55682c9c-9456-5a08-a4c5-007aa550afe8",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "849ed29c-3afc-5195-94c5-475178636b19",
+      "worker_id": "32743351-e48a-5d10-94aa-5a8139cb5a65",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "pending",
+      "reviewed_by": null,
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": null
+    },
+    {
+      "id": "c267e445-e52b-5637-80a3-3fd339a30247",
+      "worker_id": "a31f85bf-6c8a-54c4-8774-8f3f2faf3085",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    },
+    {
+      "id": "6e897cd5-793c-52be-8f24-806ecc4d143c",
+      "worker_id": "f724a09d-7252-59a8-b944-a9000de98142",
+      "document_type": "aadhaar_masked",
+      "private_storage_path": null,
+      "status": "approved",
+      "reviewed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "review_note": "Demo verification record; no real document attached.",
+      "submitted_at": "2026-09-10T10:00:00+00:00",
+      "reviewed_at": "2026-09-11T10:00:00+00:00"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "ea5dafdd-3e46-55ea-bac8-6d5b12344dbe",
+      "customer_id": "070bf1ef-0197-5754-a0dc-4fcd47f87f3a",
+      "worker_id": "f521b131-6aca-512a-9564-766d4c5405c6",
+      "skill_id": 2,
+      "title": "Kitchen tap leaking",
+      "description": "Repair a leaking kitchen tap.",
+      "service_address": "Demo address 1, Vijayawada (fictional)",
+      "service_area": "Vijayawada",
+      "requested_date": "2026-09-02T10:00:00+00:00",
+      "status": "completed",
+      "completion_confirmed_at": "2026-09-03T10:00:00+00:00",
+      "created_at": "2026-09-01T10:00:00+00:00"
+    },
+    {
+      "id": "b2d0f78e-7ffc-5e85-a88e-d6bf5e2054fb",
+      "customer_id": "f10e8e1f-d7ab-54bd-ba12-d015faa3b6e5",
+      "worker_id": "a442a2c9-9d55-5377-8520-2c3f3d1274e9",
+      "skill_id": 4,
+      "title": "Install ceiling fan",
+      "description": "Install one ceiling fan.",
+      "service_address": "Demo address 2, Guntur (fictional)",
+      "service_area": "Guntur",
+      "requested_date": "2026-09-03T10:00:00+00:00",
+      "status": "in_progress",
+      "completion_confirmed_at": null,
+      "created_at": "2026-09-02T10:00:00+00:00"
+    },
+    {
+      "id": "87b61b2c-dee7-5e12-8622-550351f36871",
+      "customer_id": "3f967480-2458-5955-bd7f-2842581a2a59",
+      "worker_id": "0ecba436-7bdf-546a-af2b-3634840d0635",
+      "skill_id": 3,
+      "title": "Repair wooden door",
+      "description": "Repair hinges and align door.",
+      "service_address": "Demo address 3, Tenali (fictional)",
+      "service_area": "Tenali",
+      "requested_date": "2026-09-04T10:00:00+00:00",
+      "status": "completed",
+      "completion_confirmed_at": "2026-09-05T10:00:00+00:00",
+      "created_at": "2026-09-03T10:00:00+00:00"
+    },
+    {
+      "id": "cd6f0fa6-6ccd-5c23-a146-d7de65793feb",
+      "customer_id": "2d039072-bd57-5e61-814f-e68a54c3ae06",
+      "worker_id": "944afb6e-5c67-504d-b3cd-03a0f1db5c0b",
+      "skill_id": 5,
+      "title": "Paint bedroom wall",
+      "description": "Paint one bedroom wall.",
+      "service_address": "Demo address 4, Vijayawada (fictional)",
+      "service_area": "Vijayawada",
+      "requested_date": "2026-09-05T10:00:00+00:00",
+      "status": "cancelled",
+      "completion_confirmed_at": null,
+      "created_at": "2026-09-04T10:00:00+00:00"
+    },
+    {
+      "id": "2511bfc5-50d7-5369-8242-9dea4d44908d",
+      "customer_id": "16cdf7b2-1df0-5470-a27c-02aab3a3d758",
+      "worker_id": "9d3574e3-fd70-5f27-8334-59795ef9c412",
+      "skill_id": 6,
+      "title": "Deep clean apartment",
+      "description": "Deep clean a two-room apartment.",
+      "service_address": "Demo address 5, Mangalagiri (fictional)",
+      "service_area": "Mangalagiri",
+      "requested_date": "2026-09-06T10:00:00+00:00",
+      "status": "requested",
+      "completion_confirmed_at": null,
+      "created_at": "2026-09-05T10:00:00+00:00"
+    },
+    {
+      "id": "2767fcd0-2bd6-52db-b9ff-718578015622",
+      "customer_id": "89770f53-d268-5412-b082-078369a44528",
+      "worker_id": "61750a2a-c9ff-56e2-87f2-ab5fca4a64d2",
+      "skill_id": 1,
+      "title": "Repair boundary wall",
+      "description": "Inspect and repair a small wall section.",
+      "service_address": "Demo address 6, Guntur (fictional)",
+      "service_area": "Guntur",
+      "requested_date": "2026-09-07T10:00:00+00:00",
+      "status": "quoted",
+      "completion_confirmed_at": null,
+      "created_at": "2026-09-06T10:00:00+00:00"
+    },
+    {
+      "id": "816546d7-dbe3-5f3c-955c-1037998757e9",
+      "customer_id": "0b2c5330-c60e-599d-9d99-ec54ccabc79b",
+      "worker_id": "b11e6ab4-d969-5597-b4eb-96189fb161aa",
+      "skill_id": 2,
+      "title": "Bathroom pipe check",
+      "description": "Inspect bathroom plumbing.",
+      "service_address": "Demo address 7, Vijayawada (fictional)",
+      "service_area": "Vijayawada",
+      "requested_date": "2026-09-08T10:00:00+00:00",
+      "status": "scheduled",
+      "completion_confirmed_at": null,
+      "created_at": "2026-09-07T10:00:00+00:00"
+    },
+    {
+      "id": "114a45e6-8f67-5590-bce7-11c0ab10afee",
+      "customer_id": "9a23336d-b97a-5f46-867e-fc1a95861db7",
+      "worker_id": "6970bcc9-d9e6-5855-ae96-a22ada854a9a",
+      "skill_id": 5,
+      "title": "Repaint kitchen",
+      "description": "Prepare and repaint kitchen walls.",
+      "service_address": "Demo address 8, Tenali (fictional)",
+      "service_area": "Tenali",
+      "requested_date": "2026-09-09T10:00:00+00:00",
+      "status": "quote_accepted",
+      "completion_confirmed_at": null,
+      "created_at": "2026-09-08T10:00:00+00:00"
+    },
+    {
+      "id": "5c628faf-815c-5a30-8641-631284e2ac71",
+      "customer_id": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "worker_id": "bdd024af-8c04-55ce-8e34-c73eb3116844",
+      "skill_id": 4,
+      "title": "Check electrical sockets",
+      "description": "Inspect three electrical sockets.",
+      "service_address": "Demo address 9, Mangalagiri (fictional)",
+      "service_area": "Mangalagiri",
+      "requested_date": "2026-09-10T10:00:00+00:00",
+      "status": "worker_completed",
+      "completion_confirmed_at": null,
+      "created_at": "2026-09-09T10:00:00+00:00"
+    },
+    {
+      "id": "3c6ad7c1-54b4-51de-8d62-7922b2d61436",
+      "customer_id": "c683dde0-4458-5837-9e80-bc009dd8e8f6",
+      "worker_id": "8a82dc00-7ac5-5c6e-b277-744d712e949a",
+      "skill_id": 4,
+      "title": "Replace light switches",
+      "description": "Replace two faulty switches.",
+      "service_address": "Demo address 10, Vijayawada (fictional)",
+      "service_area": "Vijayawada",
+      "requested_date": "2026-09-11T10:00:00+00:00",
+      "status": "accepted_by_worker",
+      "completion_confirmed_at": null,
+      "created_at": "2026-09-10T10:00:00+00:00"
+    }
+  ],
+  "quotations": [
+    {
+      "id": "0a25d72c-80fc-5c32-8e3f-c4ab8da6de98",
+      "booking_id": "ea5dafdd-3e46-55ea-bac8-6d5b12344dbe",
+      "worker_id": "f521b131-6aca-512a-9564-766d4c5405c6",
+      "amount": 700,
+      "currency": "INR",
+      "work_scope": "Repair a leaking kitchen tap.",
+      "materials_included": false,
+      "estimated_duration": "1 day",
+      "status": "accepted",
+      "valid_until": "2026-09-07T10:00:00+00:00",
+      "created_at": "2026-09-02T10:00:00+00:00"
+    },
+    {
+      "id": "093ff0cd-d1cd-5673-894d-72249734675f",
+      "booking_id": "b2d0f78e-7ffc-5e85-a88e-d6bf5e2054fb",
+      "worker_id": "a442a2c9-9d55-5377-8520-2c3f3d1274e9",
+      "amount": 950,
+      "currency": "INR",
+      "work_scope": "Install one ceiling fan.",
+      "materials_included": false,
+      "estimated_duration": "1 day",
+      "status": "accepted",
+      "valid_until": "2026-09-08T10:00:00+00:00",
+      "created_at": "2026-09-03T10:00:00+00:00"
+    },
+    {
+      "id": "06436aef-523a-55bb-a91c-4b65d441c2da",
+      "booking_id": "87b61b2c-dee7-5e12-8622-550351f36871",
+      "worker_id": "0ecba436-7bdf-546a-af2b-3634840d0635",
+      "amount": 800,
+      "currency": "INR",
+      "work_scope": "Repair hinges and align door.",
+      "materials_included": false,
+      "estimated_duration": "1 day",
+      "status": "accepted",
+      "valid_until": "2026-09-09T10:00:00+00:00",
+      "created_at": "2026-09-04T10:00:00+00:00"
+    },
+    {
+      "id": "ce5e64cf-b186-52f0-b90c-be7be1865cd0",
+      "booking_id": "cd6f0fa6-6ccd-5c23-a146-d7de65793feb",
+      "worker_id": "944afb6e-5c67-504d-b3cd-03a0f1db5c0b",
+      "amount": 1200,
+      "currency": "INR",
+      "work_scope": "Paint one bedroom wall.",
+      "materials_included": false,
+      "estimated_duration": "1 day",
+      "status": "declined",
+      "valid_until": "2026-09-10T10:00:00+00:00",
+      "created_at": "2026-09-05T10:00:00+00:00"
+    },
+    {
+      "id": "41ad792f-d155-5006-89c2-fbd2eb003237",
+      "booking_id": "2767fcd0-2bd6-52db-b9ff-718578015622",
+      "worker_id": "61750a2a-c9ff-56e2-87f2-ab5fca4a64d2",
+      "amount": 1800,
+      "currency": "INR",
+      "work_scope": "Inspect and repair a small wall section.",
+      "materials_included": false,
+      "estimated_duration": "1 day",
+      "status": "submitted",
+      "valid_until": "2026-09-12T10:00:00+00:00",
+      "created_at": "2026-09-07T10:00:00+00:00"
+    },
+    {
+      "id": "5d5dd06d-ecad-5a1d-9b81-f697a12adc35",
+      "booking_id": "816546d7-dbe3-5f3c-955c-1037998757e9",
+      "worker_id": "b11e6ab4-d969-5597-b4eb-96189fb161aa",
+      "amount": 650,
+      "currency": "INR",
+      "work_scope": "Inspect bathroom plumbing.",
+      "materials_included": false,
+      "estimated_duration": "1 day",
+      "status": "accepted",
+      "valid_until": "2026-09-13T10:00:00+00:00",
+      "created_at": "2026-09-08T10:00:00+00:00"
+    },
+    {
+      "id": "4f6a5b7a-943f-5730-b3b1-f3202e0e4f0f",
+      "booking_id": "114a45e6-8f67-5590-bce7-11c0ab10afee",
+      "worker_id": "6970bcc9-d9e6-5855-ae96-a22ada854a9a",
+      "amount": 1500,
+      "currency": "INR",
+      "work_scope": "Prepare and repaint kitchen walls.",
+      "materials_included": false,
+      "estimated_duration": "1 day",
+      "status": "accepted",
+      "valid_until": "2026-09-14T10:00:00+00:00",
+      "created_at": "2026-09-09T10:00:00+00:00"
+    },
+    {
+      "id": "4c7dbdf0-9d07-5f82-8b34-689aca83654d",
+      "booking_id": "5c628faf-815c-5a30-8641-631284e2ac71",
+      "worker_id": "bdd024af-8c04-55ce-8e34-c73eb3116844",
+      "amount": 900,
+      "currency": "INR",
+      "work_scope": "Inspect three electrical sockets.",
+      "materials_included": false,
+      "estimated_duration": "1 day",
+      "status": "accepted",
+      "valid_until": "2026-09-15T10:00:00+00:00",
+      "created_at": "2026-09-10T10:00:00+00:00"
+    },
+    {
+      "id": "27da6015-8749-5e8d-8e0e-0bb9cc9a7cef",
+      "booking_id": "3c6ad7c1-54b4-51de-8d62-7922b2d61436",
+      "worker_id": "8a82dc00-7ac5-5c6e-b277-744d712e949a",
+      "amount": 750,
+      "currency": "INR",
+      "work_scope": "Replace two faulty switches.",
+      "materials_included": false,
+      "estimated_duration": "1 day",
+      "status": "submitted",
+      "valid_until": "2026-09-16T10:00:00+00:00",
+      "created_at": "2026-09-11T10:00:00+00:00"
+    }
+  ],
+  "booking_status_history": [
+    {
+      "booking_id": "ea5dafdd-3e46-55ea-bac8-6d5b12344dbe",
+      "changed_by": "070bf1ef-0197-5754-a0dc-4fcd47f87f3a",
+      "old_status": null,
+      "new_status": "requested",
+      "note": "Demo booking created",
+      "created_at": "2026-09-01T10:00:00+00:00"
+    },
+    {
+      "booking_id": "ea5dafdd-3e46-55ea-bac8-6d5b12344dbe",
+      "changed_by": "9c13a56b-1ce7-52fe-9562-e19bc00b3b98",
+      "old_status": "requested",
+      "new_status": "completed",
+      "note": "Demo status history",
+      "created_at": "2026-09-02T10:00:00+00:00"
+    },
+    {
+      "booking_id": "b2d0f78e-7ffc-5e85-a88e-d6bf5e2054fb",
+      "changed_by": "f10e8e1f-d7ab-54bd-ba12-d015faa3b6e5",
+      "old_status": null,
+      "new_status": "requested",
+      "note": "Demo booking created",
+      "created_at": "2026-09-02T10:00:00+00:00"
+    },
+    {
+      "booking_id": "b2d0f78e-7ffc-5e85-a88e-d6bf5e2054fb",
+      "changed_by": "f0312702-d4de-5f3c-bc8c-90cda501cbb4",
+      "old_status": "requested",
+      "new_status": "in_progress",
+      "note": "Demo status history",
+      "created_at": "2026-09-03T10:00:00+00:00"
+    },
+    {
+      "booking_id": "87b61b2c-dee7-5e12-8622-550351f36871",
+      "changed_by": "3f967480-2458-5955-bd7f-2842581a2a59",
+      "old_status": null,
+      "new_status": "requested",
+      "note": "Demo booking created",
+      "created_at": "2026-09-03T10:00:00+00:00"
+    },
+    {
+      "booking_id": "87b61b2c-dee7-5e12-8622-550351f36871",
+      "changed_by": "63cd72e2-267b-569b-aa40-d2e5a9cba686",
+      "old_status": "requested",
+      "new_status": "completed",
+      "note": "Demo status history",
+      "created_at": "2026-09-04T10:00:00+00:00"
+    },
+    {
+      "booking_id": "cd6f0fa6-6ccd-5c23-a146-d7de65793feb",
+      "changed_by": "2d039072-bd57-5e61-814f-e68a54c3ae06",
+      "old_status": null,
+      "new_status": "requested",
+      "note": "Demo booking created",
+      "created_at": "2026-09-04T10:00:00+00:00"
+    },
+    {
+      "booking_id": "cd6f0fa6-6ccd-5c23-a146-d7de65793feb",
+      "changed_by": "60acf6df-3a8c-5793-8ed6-97e26fb60386",
+      "old_status": "requested",
+      "new_status": "cancelled",
+      "note": "Demo status history",
+      "created_at": "2026-09-05T10:00:00+00:00"
+    },
+    {
+      "booking_id": "2511bfc5-50d7-5369-8242-9dea4d44908d",
+      "changed_by": "16cdf7b2-1df0-5470-a27c-02aab3a3d758",
+      "old_status": null,
+      "new_status": "requested",
+      "note": "Demo booking created",
+      "created_at": "2026-09-05T10:00:00+00:00"
+    },
+    {
+      "booking_id": "2767fcd0-2bd6-52db-b9ff-718578015622",
+      "changed_by": "89770f53-d268-5412-b082-078369a44528",
+      "old_status": null,
+      "new_status": "requested",
+      "note": "Demo booking created",
+      "created_at": "2026-09-06T10:00:00+00:00"
+    },
+    {
+      "booking_id": "2767fcd0-2bd6-52db-b9ff-718578015622",
+      "changed_by": "ac572fd6-95ad-5a5d-a2cd-8ad589d787db",
+      "old_status": "requested",
+      "new_status": "quoted",
+      "note": "Demo status history",
+      "created_at": "2026-09-07T10:00:00+00:00"
+    },
+    {
+      "booking_id": "816546d7-dbe3-5f3c-955c-1037998757e9",
+      "changed_by": "0b2c5330-c60e-599d-9d99-ec54ccabc79b",
+      "old_status": null,
+      "new_status": "requested",
+      "note": "Demo booking created",
+      "created_at": "2026-09-07T10:00:00+00:00"
+    },
+    {
+      "booking_id": "816546d7-dbe3-5f3c-955c-1037998757e9",
+      "changed_by": "b4b67d8d-ce48-53ec-97fc-7cd30c0a9390",
+      "old_status": "requested",
+      "new_status": "scheduled",
+      "note": "Demo status history",
+      "created_at": "2026-09-08T10:00:00+00:00"
+    },
+    {
+      "booking_id": "114a45e6-8f67-5590-bce7-11c0ab10afee",
+      "changed_by": "9a23336d-b97a-5f46-867e-fc1a95861db7",
+      "old_status": null,
+      "new_status": "requested",
+      "note": "Demo booking created",
+      "created_at": "2026-09-08T10:00:00+00:00"
+    },
+    {
+      "booking_id": "114a45e6-8f67-5590-bce7-11c0ab10afee",
+      "changed_by": "a7622b67-e649-515f-b4e7-a9666228e00a",
+      "old_status": "requested",
+      "new_status": "quote_accepted",
+      "note": "Demo status history",
+      "created_at": "2026-09-09T10:00:00+00:00"
+    },
+    {
+      "booking_id": "5c628faf-815c-5a30-8641-631284e2ac71",
+      "changed_by": "639b5bb2-f4b8-5457-a73f-8888d9b24d46",
+      "old_status": null,
+      "new_status": "requested",
+      "note": "Demo booking created",
+      "created_at": "2026-09-09T10:00:00+00:00"
+    },
+    {
+      "booking_id": "5c628faf-815c-5a30-8641-631284e2ac71",
+      "changed_by": "621c8a16-b041-5506-b5e4-efce8843cd73",
+      "old_status": "requested",
+      "new_status": "worker_completed",
+      "note": "Demo status history",
+      "created_at": "2026-09-10T10:00:00+00:00"
+    },
+    {
+      "booking_id": "3c6ad7c1-54b4-51de-8d62-7922b2d61436",
+      "changed_by": "c683dde0-4458-5837-9e80-bc009dd8e8f6",
+      "old_status": null,
+      "new_status": "requested",
+      "note": "Demo booking created",
+      "created_at": "2026-09-10T10:00:00+00:00"
+    },
+    {
+      "booking_id": "3c6ad7c1-54b4-51de-8d62-7922b2d61436",
+      "changed_by": "1dfa5eba-2ee9-5b57-823f-78511def5cc2",
+      "old_status": "requested",
+      "new_status": "accepted_by_worker",
+      "note": "Demo status history",
+      "created_at": "2026-09-11T10:00:00+00:00"
+    }
+  ],
+  "payment_records": [
+    {
+      "id": "bf3946f4-83ec-5c34-ac0a-4f2903ed3b7a",
+      "booking_id": "ea5dafdd-3e46-55ea-bac8-6d5b12344dbe",
+      "payer_id": "070bf1ef-0197-5754-a0dc-4fcd47f87f3a",
+      "amount": 700,
+      "currency": "INR",
+      "payment_type": "final",
+      "status": "paid",
+      "payment_method": "demo_cash",
+      "provider_reference": "DEMO-PAY-001",
+      "paid_at": "2026-09-03T10:00:00+00:00"
+    },
+    {
+      "id": "68ce5d1e-ca54-5498-9395-7d6f3c221c50",
+      "booking_id": "87b61b2c-dee7-5e12-8622-550351f36871",
+      "payer_id": "3f967480-2458-5955-bd7f-2842581a2a59",
+      "amount": 800,
+      "currency": "INR",
+      "payment_type": "final",
+      "status": "paid",
+      "payment_method": "demo_cash",
+      "provider_reference": "DEMO-PAY-003",
+      "paid_at": "2026-09-05T10:00:00+00:00"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "0500d69b-97a8-5933-a75b-b4b9b8fba7d6",
+      "booking_id": "ea5dafdd-3e46-55ea-bac8-6d5b12344dbe",
+      "customer_id": "070bf1ef-0197-5754-a0dc-4fcd47f87f3a",
+      "worker_id": "f521b131-6aca-512a-9564-766d4c5405c6",
+      "rating": 5,
+      "comment": "Demo review only; not a real customer review.",
+      "created_at": "2026-09-04T10:00:00+00:00"
+    },
+    {
+      "id": "995fca02-fa33-540e-bff7-d5020ba625f7",
+      "booking_id": "87b61b2c-dee7-5e12-8622-550351f36871",
+      "customer_id": "3f967480-2458-5955-bd7f-2842581a2a59",
+      "worker_id": "0ecba436-7bdf-546a-af2b-3634840d0635",
+      "rating": 5,
+      "comment": "Demo review only; not a real customer review.",
+      "created_at": "2026-09-06T10:00:00+00:00"
+    }
+  ],
+  "complaints": [
+    {
+      "id": "c31302dc-460b-5f4e-96fc-5f086a621b00",
+      "booking_id": "b2d0f78e-7ffc-5e85-a88e-d6bf5e2054fb",
+      "submitted_by": "f10e8e1f-d7ab-54bd-ba12-d015faa3b6e5",
+      "against_user_id": "f0312702-d4de-5f3c-bc8c-90cda501cbb4",
+      "subject": "Demo complaint about schedule",
+      "description": "Fictional test complaint for admin dashboard.",
+      "status": "open",
+      "admin_note": null,
+      "resolved_by": null,
+      "created_at": "2026-09-20T10:00:00+00:00"
+    }
+  ]
+}
