@@ -16,12 +16,20 @@ import {
   X,
   TrendingUp,
   DollarSign,
-  Phone
+  Phone,
+  Edit3
 } from 'lucide-react';
 
 export default function WorkerDashboard() {
   const { lang, t } = useLanguage();
-  const { bookings, submitQuotation, updateJobStatus, workers } = useData();
+  const { 
+    bookings, 
+    submitQuotation, 
+    updateJobStatus, 
+    workers, 
+    profileChangeRequests = [], 
+    submitProfileChangeRequest 
+  } = useData();
   const { currentUser } = useAuth();
 
   const [activeTab, setActiveTab] = useState('requests'); // 'requests' | 'active' | 'completed'
@@ -32,8 +40,43 @@ export default function WorkerDashboard() {
   const [availability, setAvailability] = useState('available');
   const [notice, setNotice] = useState('');
 
+  // Profile change modal state
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [workerChangeField, setWorkerChangeField] = useState('indicativeWage');
+  const [workerRequestedVal, setWorkerRequestedVal] = useState('');
+  const [workerReason, setWorkerReason] = useState('');
+
   // Find worker record matching currentUser or default
   const workerProfile = workers.find(w => w.id === currentUser?.uid || w.name === currentUser?.name) || workers[0];
+
+  const myWorkerChangeRequests = profileChangeRequests.filter(r => 
+    r.userId === workerProfile?.id || r.userName === workerProfile?.name
+  );
+
+  const handleWorkerProfileChange = (e) => {
+    e.preventDefault();
+    const fieldMap = {
+      indicativeWage: { label: 'Indicative Daily Wage', current: `₹${workerProfile?.indicativeWage} / day` },
+      serviceArea: { label: 'Service District / Area', current: workerProfile?.serviceArea || 'Vijayawada' },
+      phone: { label: 'Primary Contact Mobile', current: workerProfile?.phone || '+91 90000 00001' },
+      name: { label: 'Full Legal Name', current: workerProfile?.name || 'Aarav Reddy' }
+    };
+    const target = fieldMap[workerChangeField];
+    submitProfileChangeRequest({
+      userId: workerProfile?.id || 'w-001',
+      userName: workerProfile?.name || 'Aarav Reddy',
+      userRole: 'worker',
+      field: target.label,
+      fieldKey: workerChangeField,
+      currentVal: target.current,
+      requestedVal: workerRequestedVal,
+      reason: workerReason
+    });
+    setProfileModalOpen(false);
+    setWorkerRequestedVal('');
+    setWorkerReason('');
+    showNotice(lang === 'te' ? 'కార్మికుల ప్రొఫైల్ మార్పు అభ్యర్థన అడ్మిన్‌కు పంపబడింది!' : 'Worker profile change request submitted to AP State Admin for KYC approval.');
+  };
 
   const workerBookings = bookings.filter(b => 
     b.workerUid === workerProfile?.id || b.workerName === workerProfile?.name || !b.workerUid
@@ -108,34 +151,66 @@ export default function WorkerDashboard() {
             </p>
           </div>
 
-          {/* Availability Toggle */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            backgroundColor: '#FFFFFF',
-            padding: '0.4rem 0.8rem',
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--color-border)'
-          }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
-              {t('dashboards.worker.availabilityToggle')}:
-            </span>
-            <select
-              className="form-select"
-              style={{ padding: '0.25rem 0.6rem', fontSize: '0.82rem', width: 'auto' }}
-              value={availability}
-              onChange={(e) => {
-                setAvailability(e.target.value);
-                showNotice(`Availability status updated to ${e.target.value}.`);
-              }}
+          {/* Right Action Controls: Availability & Edit Profile */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setProfileModalOpen(true)}
+              className="btn btn-outline btn-sm"
+              style={{ gap: '0.35rem', padding: '0.4rem 0.8rem' }}
             >
-              <option value="available">🟢 Available Now</option>
-              <option value="busy">🟡 Busy on Site</option>
-              <option value="unavailable">🔴 Off Duty</option>
-            </select>
+              <Edit3 size={14} />
+              <span>{lang === 'te' ? 'ప్రొఫైల్ సవరణ కోరండి' : 'Request Profile Change'}</span>
+            </button>
+
+            {/* Availability Toggle */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              backgroundColor: '#FFFFFF',
+              padding: '0.4rem 0.8rem',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--color-border)'
+            }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
+                {t('dashboards.worker.availabilityToggle')}:
+              </span>
+              <select
+                className="form-select"
+                style={{ padding: '0.25rem 0.6rem', fontSize: '0.82rem', width: 'auto' }}
+                value={availability}
+                onChange={(e) => {
+                  setAvailability(e.target.value);
+                  showNotice(`Availability status updated to ${e.target.value}.`);
+                }}
+              >
+                <option value="available">🟢 Available Now</option>
+                <option value="busy">🟡 Busy on Site</option>
+                <option value="unavailable">🔴 Off Duty</option>
+              </select>
+            </div>
           </div>
         </div>
+
+        {/* Worker Change Request Status Banner */}
+        {myWorkerChangeRequests.some(r => r.status === 'pending') && (
+          <div style={{
+            backgroundColor: '#EFF6FF',
+            border: '1.5px solid #3B82F6',
+            borderRadius: 'var(--radius-md)',
+            padding: '0.9rem 1.25rem',
+            marginBottom: '1.75rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            color: '#1E40AF'
+          }}>
+            <Clock size={20} style={{ flexShrink: 0 }} />
+            <div style={{ fontSize: '0.88rem' }}>
+              <strong>Admin Profile Verification in Progress:</strong> Your request to update <u>{myWorkerChangeRequests.find(r => r.status === 'pending')?.field}</u> to "{myWorkerChangeRequests.find(r => r.status === 'pending')?.requestedVal}" has been submitted to the AP State Admin for review.
+            </div>
+          </div>
+        )}
 
         {/* Action Flash Notification */}
         {notice && (
@@ -495,6 +570,131 @@ export default function WorkerDashboard() {
                 <button type="submit" className="btn btn-primary" style={{ flex: 2, gap: '0.4rem' }}>
                   <Send size={16} />
                   <span>Send Quotation to Client</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Official Worker Profile Edit / Admin KYC Verification Request Modal */}
+      {profileModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content animate-fade-in" style={{ maxWidth: '520px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ padding: '6px', borderRadius: '8px', backgroundColor: '#FEF3C7', color: '#B45309' }}>
+                  <Edit3 size={20} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '1.25rem', color: 'var(--color-navy)' }}>
+                    {lang === 'te' ? 'కార్మికుల ప్రొఫైల్ మార్పు అభ్యర్థన' : 'Request Worker Information Change'}
+                  </h2>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                    AP State Labour Portal • Verified KYC Protocol
+                  </span>
+                </div>
+              </div>
+              <button onClick={() => setProfileModalOpen(false)} style={{ color: 'var(--color-text-muted)', padding: '0.25rem' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div style={{
+              backgroundColor: '#FEF3C7',
+              border: '1px solid #F59E0B',
+              borderRadius: 'var(--radius-sm)',
+              padding: '0.8rem',
+              marginBottom: '1.25rem',
+              fontSize: '0.8rem',
+              color: '#92400E',
+              lineHeight: 1.45
+            }}>
+              <strong>Labour Directory Compliance:</strong> Because your worker card is published to citizens across Andhra Pradesh, wage adjustments, district relocations, or contact phone updates must be reviewed by the AP State Administration.
+            </div>
+
+            <form onSubmit={handleWorkerProfileChange} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label">Select Detail to Change *</label>
+                <select
+                  className="form-select"
+                  value={workerChangeField}
+                  onChange={(e) => setWorkerChangeField(e.target.value)}
+                >
+                  <option value="indicativeWage">Indicative Daily Wage / రోజువారీ వేతనం (₹)</option>
+                  <option value="serviceArea">Service District / పని చేసే ప్రాంతం (AP City)</option>
+                  <option value="phone">Primary Contact Phone / సంప్రదింపు మొబైల్ నంబర్</option>
+                  <option value="name">Full Legal Name / చట్టబద్ధమైన పేరు</option>
+                </select>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label">Current Verified Value</label>
+                <input
+                  type="text"
+                  disabled
+                  className="form-input"
+                  style={{ backgroundColor: '#F1F5F9', color: '#64748B' }}
+                  value={
+                    workerChangeField === 'indicativeWage'
+                      ? `₹${workerProfile?.indicativeWage || 850} / day`
+                      : workerChangeField === 'serviceArea'
+                      ? workerProfile?.serviceArea || 'Vijayawada'
+                      : workerChangeField === 'phone'
+                      ? workerProfile?.phone || '+91 90000 00001'
+                      : workerProfile?.name || 'Aarav Reddy'
+                  }
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label">New Value Requested *</label>
+                <input
+                  type={workerChangeField === 'indicativeWage' ? 'number' : workerChangeField === 'phone' ? 'tel' : 'text'}
+                  required
+                  className="form-input"
+                  placeholder={
+                    workerChangeField === 'indicativeWage'
+                      ? 'e.g. 950'
+                      : workerChangeField === 'serviceArea'
+                      ? 'e.g. Guntur or Visakhapatnam'
+                      : workerChangeField === 'phone'
+                      ? 'e.g. +91 90000 55667'
+                      : 'e.g. Aarav Reddy K'
+                  }
+                  value={workerRequestedVal}
+                  onChange={(e) => setWorkerRequestedVal(e.target.value)}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label">Reason for Request (For Admin Verification) *</label>
+                <textarea
+                  className="form-textarea"
+                  rows={3}
+                  required
+                  placeholder="Explain why this change is requested (e.g. upgraded certification & new equipment, shifted residential base to new district, updated mobile number)..."
+                  value={workerReason}
+                  onChange={(e) => setWorkerReason(e.target.value)}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setProfileModalOpen(false)}
+                  className="btn btn-outline"
+                  style={{ flex: 1 }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  style={{ flex: 2, gap: '0.4rem' }}
+                >
+                  <Send size={15} />
+                  <span>Submit to AP Admin</span>
                 </button>
               </div>
             </form>

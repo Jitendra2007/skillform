@@ -19,7 +19,17 @@ import {
 
 export default function AdminDashboard() {
   const { lang, t } = useLanguage();
-  const { verifications, approveVerification, rejectVerification, complaints, workers, bookings } = useData();
+  const { 
+    verifications, 
+    approveVerification, 
+    rejectVerification, 
+    complaints, 
+    workers, 
+    bookings,
+    profileChangeRequests = [],
+    approveProfileChangeRequest,
+    rejectProfileChangeRequest
+  } = useData();
   const { currentUser, isAdminUnlocked, unlockAdmin, lockAdmin } = useAuth();
 
   const [inspectDoc, setInspectDoc] = useState(null);
@@ -34,6 +44,17 @@ export default function AdminDashboard() {
 
   const pendingVerifs = verifications.filter(v => v.status === 'pending');
   const resolvedVerifs = verifications.filter(v => v.status !== 'pending');
+  const pendingChangeRequests = profileChangeRequests.filter(r => r.status === 'pending');
+
+  const handleApproveChange = (reqId) => {
+    approveProfileChangeRequest(reqId);
+    showNotice(lang === 'te' ? 'ప్రొఫైల్ మార్పు ఆమోదించబడింది మరియు డేటాబేస్‌లో నవీకరించబడింది!' : 'Profile change approved and updated across platform database!');
+  };
+
+  const handleRejectChange = (reqId) => {
+    rejectProfileChangeRequest(reqId, 'Administrative criteria not met.');
+    showNotice(lang === 'te' ? 'ప్రొఫైల్ మార్పు అభ్యర్థన తిరస్కరించబడింది.' : 'Profile change request rejected.');
+  };
 
   const handleSecuritySubmit = (e) => {
     e.preventDefault();
@@ -327,12 +348,111 @@ export default function AdminDashboard() {
           </div>
 
           <div className="card" style={{ padding: '1.25rem' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>Profile Change Requests</span>
+            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: pendingChangeRequests.length > 0 ? '#B45309' : '#059669', marginTop: '0.2rem' }}>
+              {pendingChangeRequests.length}
+            </div>
+            <span style={{ fontSize: '0.75rem', color: '#B45309' }}>Citizen & Worker KYC updates</span>
+          </div>
+
+          <div className="card" style={{ padding: '1.25rem' }}>
             <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>Support & Complaints</span>
             <div style={{ fontSize: '1.8rem', fontWeight: 800, color: complaints.length > 0 ? '#DC2626' : '#059669', marginTop: '0.2rem' }}>
               {complaints.length}
             </div>
             <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Community dispute log</span>
           </div>
+        </div>
+
+        {/* Section 0: Citizen & Worker Profile Information Change Queue */}
+        <div className="card" style={{ padding: '2rem', marginBottom: '2.5rem', border: '1.5px solid #FCD34D' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <h2 style={{ fontSize: '1.35rem', color: 'var(--color-navy)' }}>
+                  {lang === 'te' ? 'ప్రొఫైల్ సమాచార మార్పు అభ్యర్థనలు' : 'Citizen & Worker Profile Information Change Requests'}
+                </h2>
+                <span className="badge badge-pending" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>
+                  {pendingChangeRequests.length} Pending Approvals
+                </span>
+              </div>
+              <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '0.2rem' }}>
+                Verify and authorize official changes to citizen phone numbers, worker daily wages, legal names, or service areas before updating the public state directory.
+              </p>
+            </div>
+          </div>
+
+          {pendingChangeRequests.length > 0 ? (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                <thead>
+                  <tr style={{ borderBottom: '2px solid var(--color-border)', textAlign: 'left', color: 'var(--color-text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
+                    <th style={{ padding: '0.75rem 0.5rem' }}>User / Worker</th>
+                    <th style={{ padding: '0.75rem 0.5rem' }}>Role</th>
+                    <th style={{ padding: '0.75rem 0.5rem' }}>Field To Change</th>
+                    <th style={{ padding: '0.75rem 0.5rem' }}>Current ➡️ Requested Value</th>
+                    <th style={{ padding: '0.75rem 0.5rem' }}>Citizen Stated Reason</th>
+                    <th style={{ padding: '0.75rem 0.5rem', textAlign: 'right' }}>Admin Authorization</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingChangeRequests.map((req) => (
+                    <tr key={req.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                      <td style={{ padding: '0.9rem 0.5rem', fontWeight: 700, color: 'var(--color-navy)' }}>
+                        {req.userName}
+                      </td>
+                      <td style={{ padding: '0.9rem 0.5rem' }}>
+                        <span style={{
+                          backgroundColor: req.userRole === 'worker' ? '#E3F4E9' : '#EFF6FF',
+                          color: req.userRole === 'worker' ? '#047857' : '#1D4ED8',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          textTransform: 'uppercase'
+                        }}>
+                          {req.userRole}
+                        </span>
+                      </td>
+                      <td style={{ padding: '0.9rem 0.5rem', fontWeight: 600, color: '#334155' }}>
+                        {req.field}
+                      </td>
+                      <td style={{ padding: '0.9rem 0.5rem', fontSize: '0.85rem' }}>
+                        <span style={{ textDecoration: 'line-through', color: '#94A3B8', marginRight: '6px' }}>{req.currentVal}</span>
+                        <span style={{ color: '#047857', fontWeight: 700 }}>➡️ {req.requestedVal}</span>
+                      </td>
+                      <td style={{ padding: '0.9rem 0.5rem', fontSize: '0.82rem', color: '#475569', maxWidth: '240px' }}>
+                        "{req.reason}"
+                      </td>
+                      <td style={{ padding: '0.9rem 0.5rem', textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '0.5rem' }}>
+                          <button
+                            onClick={() => handleApproveChange(req.id)}
+                            className="btn btn-sm"
+                            style={{ backgroundColor: '#10B981', color: '#FFFFFF', padding: '0.35rem 0.75rem', fontSize: '0.78rem', gap: '0.3rem' }}
+                          >
+                            <CheckCircle2 size={13} />
+                            <span>Approve & Update</span>
+                          </button>
+                          <button
+                            onClick={() => handleRejectChange(req.id)}
+                            className="btn btn-sm btn-outline"
+                            style={{ borderColor: '#EF4444', color: '#EF4444', padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
+              ✓ All citizen and worker profile change requests have been processed.
+            </div>
+          )}
         </div>
 
         {/* Section 1: Worker Verification Submissions Queue */}

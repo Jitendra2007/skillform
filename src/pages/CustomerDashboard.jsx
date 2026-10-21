@@ -19,17 +19,33 @@ import {
   FileText,
   Search,
   CheckCircle2,
-  X
+  X,
+  Edit3,
+  ShieldCheck,
+  Send,
+  Phone
 } from 'lucide-react';
 
 export default function CustomerDashboard() {
   const { lang, t } = useLanguage();
-  const { bookings, acceptQuotation, declineQuotation, confirmCompletion } = useData();
+  const { 
+    bookings, 
+    acceptQuotation, 
+    declineQuotation, 
+    confirmCompletion, 
+    profileChangeRequests = [], 
+    submitProfileChangeRequest 
+  } = useData();
   const { currentUser } = useAuth();
 
   const [activeTab, setActiveTab] = useState('active'); // 'active' | 'history'
   const [reviewModalBooking, setReviewModalBooking] = useState(null);
   const [complaintModalBooking, setComplaintModalBooking] = useState(null);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [changeField, setChangeField] = useState('phone');
+  const [requestedValue, setRequestedValue] = useState('');
+  const [changeReason, setChangeReason] = useState('');
+
   const [reviewScore, setReviewScore] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
   const [complaintText, setComplaintText] = useState('');
@@ -38,6 +54,34 @@ export default function CustomerDashboard() {
   const customerBookings = bookings.filter(b => 
     b.customerUid === (currentUser?.uid || "cust-demo-1") || !b.customerUid
   );
+
+  const myChangeRequests = profileChangeRequests.filter(r => 
+    r.userId === (currentUser?.uid || "cust-demo-1") || r.userName === currentUser?.name
+  );
+
+  const handleProfileChangeSubmit = (e) => {
+    e.preventDefault();
+    const fieldMap = {
+      phone: { label: 'Phone Number', current: currentUser?.phone || '+91 98765 43210' },
+      name: { label: 'Full Legal Name', current: currentUser?.name || 'Keerthana Rao' },
+      serviceArea: { label: 'Service City / District', current: currentUser?.serviceArea || 'Vijayawada' }
+    };
+    const target = fieldMap[changeField];
+    submitProfileChangeRequest({
+      userId: currentUser?.uid || 'cust-demo-1',
+      userName: currentUser?.name || 'Keerthana Rao',
+      userRole: 'customer',
+      field: target.label,
+      fieldKey: changeField,
+      currentVal: target.current,
+      requestedVal: requestedValue,
+      reason: changeReason
+    });
+    setProfileModalOpen(false);
+    setRequestedValue('');
+    setChangeReason('');
+    showNotice(lang === 'te' ? 'ప్రొఫైల్ మార్పు అభ్యర్థన అడ్మిన్‌కు విజయవంతంగా పంపబడింది!' : 'Official profile change request sent to AP State Admin for verification.');
+  };
 
   const activeBookings = customerBookings.filter(b => b.status !== 'completed' && b.status !== 'cancelled');
   const pastBookings = customerBookings.filter(b => b.status === 'completed' || b.status === 'cancelled');
@@ -93,15 +137,45 @@ export default function CustomerDashboard() {
               {t('dashboards.customer.title')}
             </h1>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>
-              {t('dashboards.customer.welcome')}, <strong>{currentUser?.name || "Keerthana Rao"}</strong> ({currentUser?.serviceArea || "Andhra Pradesh"})
+              {t('dashboards.customer.welcome')}, <strong>{currentUser?.name || "Keerthana Rao"}</strong> • Phone: <strong>{currentUser?.phone || "+91 98765 43210"}</strong> ({currentUser?.serviceArea || "Andhra Pradesh"})
             </p>
           </div>
 
-          <Link to="/search" className="btn btn-primary" style={{ gap: '0.4rem' }}>
-            <Search size={16} />
-            <span>{t('dashboards.customer.bookNow')}</span>
-          </Link>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setProfileModalOpen(true)}
+              className="btn btn-outline"
+              style={{ gap: '0.4rem', fontSize: '0.85rem' }}
+            >
+              <Edit3 size={15} />
+              <span>{lang === 'te' ? 'ప్రొఫైల్ సవరణ / అభ్యర్థన' : 'Edit Profile / Request Admin Change'}</span>
+            </button>
+            <Link to="/search" className="btn btn-primary" style={{ gap: '0.4rem' }}>
+              <Search size={16} />
+              <span>{t('dashboards.customer.bookNow')}</span>
+            </Link>
+          </div>
         </div>
+
+        {/* Change Request Status Banner */}
+        {myChangeRequests.some(r => r.status === 'pending') && (
+          <div style={{
+            backgroundColor: '#EFF6FF',
+            border: '1.5px solid #3B82F6',
+            borderRadius: 'var(--radius-md)',
+            padding: '0.9rem 1.25rem',
+            marginBottom: '1.75rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            color: '#1E40AF'
+          }}>
+            <Clock size={20} style={{ flexShrink: 0 }} />
+            <div style={{ fontSize: '0.88rem' }}>
+              <strong>Admin Profile Verification in Progress:</strong> Your request to update <u>{myChangeRequests.find(r => r.status === 'pending')?.field}</u> to "{myChangeRequests.find(r => r.status === 'pending')?.requestedVal}" is pending AP State Admin approval.
+            </div>
+          </div>
+        )}
 
         {/* Action Flash Notification */}
         {actionNotice && (
@@ -419,6 +493,126 @@ export default function CustomerDashboard() {
               <div style={{ display: 'flex', gap: '0.75rem' }}>
                 <button type="button" onClick={() => setComplaintModalBooking(null)} className="btn btn-outline" style={{ flex: 1 }}>Cancel</button>
                 <button type="submit" className="btn btn-primary btn-danger" style={{ flex: 2 }}>Submit Ticket</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Official Profile Edit / Admin Verification Request Modal */}
+      {profileModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content animate-fade-in" style={{ maxWidth: '520px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ padding: '6px', borderRadius: '8px', backgroundColor: '#EFF6FF', color: '#2563EB' }}>
+                  <Edit3 size={20} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '1.25rem', color: 'var(--color-navy)' }}>
+                    {lang === 'te' ? 'అడ్మిన్ ద్వారా ప్రొఫైల్ సవరణ' : 'Request Profile Information Change'}
+                  </h2>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                    AP Labour Platform Official Verification Protocol
+                  </span>
+                </div>
+              </div>
+              <button onClick={() => setProfileModalOpen(false)} style={{ color: 'var(--color-text-muted)', padding: '0.25rem' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div style={{
+              backgroundColor: '#FEF3C7',
+              border: '1px solid #F59E0B',
+              borderRadius: 'var(--radius-sm)',
+              padding: '0.8rem',
+              marginBottom: '1.25rem',
+              fontSize: '0.8rem',
+              color: '#92400E',
+              lineHeight: 1.45
+            }}>
+              <strong>Security & Identity Protocol:</strong> To protect citizen identity and prevent unauthorized impersonation, changing verified names, mobile contact numbers, or districts requires submission to the AP State Admin for approval.
+            </div>
+
+            <form onSubmit={handleProfileChangeSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label">Which verified detail do you wish to change? *</label>
+                <select
+                  className="form-select"
+                  value={changeField}
+                  onChange={(e) => setChangeField(e.target.value)}
+                >
+                  <option value="phone">Primary Mobile / Calling Number (ప్రస్తుత మొబైల్ నంబర్)</option>
+                  <option value="name">Full Legal Name (పూర్తి చట్టబద్ధమైన పేరు)</option>
+                  <option value="serviceArea">District / Residential City (జిల్లా / నగరం)</option>
+                </select>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label">Current Verified Value</label>
+                <input
+                  type="text"
+                  disabled
+                  className="form-input"
+                  style={{ backgroundColor: '#F1F5F9', color: '#64748B' }}
+                  value={
+                    changeField === 'phone'
+                      ? currentUser?.phone || '+91 98765 43210'
+                      : changeField === 'name'
+                      ? currentUser?.name || 'Keerthana Rao'
+                      : currentUser?.serviceArea || 'Vijayawada'
+                  }
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label">New Value Requested *</label>
+                <input
+                  type={changeField === 'phone' ? 'tel' : 'text'}
+                  required
+                  className="form-input"
+                  placeholder={
+                    changeField === 'phone'
+                      ? 'e.g. +91 91234 56789'
+                      : changeField === 'name'
+                      ? 'e.g. Keerthana Rao Vaddi'
+                      : 'e.g. Visakhapatnam'
+                  }
+                  value={requestedValue}
+                  onChange={(e) => setRequestedValue(e.target.value)}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label">Reason for Request (For Admin Review) *</label>
+                <textarea
+                  className="form-textarea"
+                  rows={3}
+                  required
+                  placeholder="State the reason for this administrative update (e.g. SIM card replacement, official legal name correction, relocation to new AP district)..."
+                  value={changeReason}
+                  onChange={(e) => setChangeReason(e.target.value)}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setProfileModalOpen(false)}
+                  className="btn btn-outline"
+                  style={{ flex: 1 }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  style={{ flex: 2, gap: '0.4rem' }}
+                >
+                  <Send size={15} />
+                  <span>Send Request to Admin</span>
+                </button>
               </div>
             </form>
           </div>
