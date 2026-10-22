@@ -9,6 +9,7 @@ export const DEMO_USERS = {
     uid: "cust-demo-1",
     name: "Keerthana Rao",
     email: "keerthana@example.com",
+    password: "password123",
     role: "customer",
     serviceArea: "Vijayawada",
     phone: "+91 98765 43210"
@@ -17,6 +18,7 @@ export const DEMO_USERS = {
     uid: "61750a2a-c9ff-56e2-87f2-ab5fca4a64d2",
     name: "Aarav Reddy",
     email: "aarav.masonry@example.com",
+    password: "password123",
     role: "worker",
     serviceArea: "Vijayawada",
     phone: "+91 90000 00001",
@@ -27,6 +29,7 @@ export const DEMO_USERS = {
     uid: "admin-master-001",
     name: "Andhra Pradesh State Admin",
     email: "admin@skillconnect.gov.in",
+    password: "APADMIN@2026",
     role: "admin",
     serviceArea: "Andhra Pradesh",
     phone: "+91 866 2445566"
@@ -46,6 +49,35 @@ export function AuthProvider({ children }) {
     return DEMO_USERS.customer;
   });
 
+  const [registeredUsers, setRegisteredUsers] = useState(() => {
+    const saved = localStorage.getItem('skillconnect_registered_users');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return [
+      {
+        uid: "cust-demo-1",
+        name: "Keerthana Rao",
+        email: "keerthana@example.com",
+        password: "password123",
+        role: "customer",
+        phone: "+91 98765 43210",
+        serviceArea: "Vijayawada"
+      },
+      {
+        uid: "61750a2a-c9ff-56e2-87f2-ab5fca4a64d2",
+        name: "Aarav Reddy",
+        email: "aarav.masonry@example.com",
+        password: "password123",
+        role: "worker",
+        phone: "+91 90000 00001",
+        serviceArea: "Vijayawada"
+      }
+    ];
+  });
+
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -56,11 +88,14 @@ export function AuthProvider({ children }) {
     }
   }, [currentUser]);
 
+  useEffect(() => {
+    localStorage.setItem('skillconnect_registered_users', JSON.stringify(registeredUsers));
+  }, [registeredUsers]);
+
   // Optional Firebase Auth listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
       if (fbUser) {
-        // If logged in via Firebase
         setCurrentUser(prev => ({
           ...prev,
           uid: fbUser.uid,
@@ -82,15 +117,96 @@ export function AuthProvider({ children }) {
 
   const loginAs = (role) => {
     const user = DEMO_USERS[role] || DEMO_USERS.customer;
+    if (role === 'admin') {
+      setIsAdminUnlocked(true);
+      try { sessionStorage.setItem('skillconnect_admin_unlocked', 'true'); } catch (e) {}
+    }
     setCurrentUser(user);
+    return user;
+  };
+
+  const registerUser = (userData) => {
+    const newUser = {
+      uid: `u-${Date.now().toString().slice(-6)}`,
+      name: userData.name || "Customer User",
+      phone: userData.phone || "+91 98765 43210",
+      email: (userData.email || "").toLowerCase().trim(),
+      password: userData.password || "password123",
+      role: userData.role || "customer",
+      serviceArea: userData.serviceArea || "Vijayawada"
+    };
+
+    setRegisteredUsers(prev => {
+      const filtered = prev.filter(u => u.email !== newUser.email);
+      const updated = [newUser, ...filtered];
+      localStorage.setItem('skillconnect_registered_users', JSON.stringify(updated));
+      return updated;
+    });
+
+    setCurrentUser(newUser);
+    return newUser;
+  };
+
+  const loginWithCredentials = (email, password, roleHint = 'customer') => {
+    const cleanEmail = (email || '').toLowerCase().trim();
+    const cleanPass = (password || '').trim();
+
+    // 1. Check Admin
+    if (
+      cleanEmail === 'admin@skillconnect.gov.in' ||
+      cleanPass.toUpperCase() === 'APADMIN@2026' ||
+      cleanPass === '9848' ||
+      cleanPass === 'admin123'
+    ) {
+      unlockAdmin(cleanPass || 'APADMIN@2026');
+      return { success: true, role: 'admin', user: DEMO_USERS.admin };
+    }
+
+    // 2. Check registered accounts
+    const foundRegistered = registeredUsers.find(u => u.email === cleanEmail);
+    if (foundRegistered) {
+      if (cleanPass && foundRegistered.password && foundRegistered.password !== cleanPass) {
+        return { success: false, message: 'Incorrect password for this registered email.' };
+      }
+      setCurrentUser(foundRegistered);
+      return { success: true, role: foundRegistered.role, user: foundRegistered };
+    }
+
+    // 3. Check demo customer
+    if (cleanEmail === 'keerthana@example.com' || cleanEmail.includes('keerthana')) {
+      const cust = { ...DEMO_USERS.customer, email: cleanEmail };
+      setCurrentUser(cust);
+      return { success: true, role: 'customer', user: cust };
+    }
+
+    // 4. Check demo worker
+    if (cleanEmail === 'aarav.masonry@example.com' || cleanEmail.includes('aarav')) {
+      const wrk = { ...DEMO_USERS.worker, email: cleanEmail };
+      setCurrentUser(wrk);
+      return { success: true, role: 'worker', user: wrk };
+    }
+
+    // 5. Default login by role (Flexible demo credentials)
+    const fallbackUser = {
+      uid: `u-${Date.now().toString().slice(-6)}`,
+      name: cleanEmail ? cleanEmail.split('@')[0].replace('.', ' ') : (roleHint === 'worker' ? 'Skilled Worker' : 'Citizen Customer'),
+      email: cleanEmail || `${roleHint}@skillconnect.ap`,
+      password: cleanPass || 'password123',
+      role: roleHint,
+      phone: "+91 98765 43210",
+      serviceArea: "Vijayawada"
+    };
+
+    // Save newly entered account so it persists
+    setRegisteredUsers(prev => [fallbackUser, ...prev.filter(u => u.email !== fallbackUser.email)]);
+    setCurrentUser(fallbackUser);
+    return { success: true, role: roleHint, user: fallbackUser };
   };
 
   const logout = async () => {
     try {
       await fbSignOut(auth);
-    } catch (e) {
-      // Ignored for offline demo
-    }
+    } catch (e) {}
     setCurrentUser(null);
   };
 
@@ -122,6 +238,9 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{ 
       currentUser, 
       setCurrentUser, 
+      registeredUsers,
+      registerUser,
+      loginWithCredentials,
       loginAs, 
       logout, 
       loading,

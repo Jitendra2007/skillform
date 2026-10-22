@@ -6,7 +6,7 @@ import { Wrench, User, Briefcase, Lock, ArrowRight, ShieldAlert } from 'lucide-r
 
 export default function LoginSignup() {
   const { lang, t } = useLanguage();
-  const { loginAs, setCurrentUser } = useAuth();
+  const { loginAs, loginWithCredentials, registerUser } = useAuth();
   const navigate = useNavigate();
 
   const [mode, setMode] = useState('login'); // 'login' | 'register'
@@ -15,26 +15,43 @@ export default function LoginSignup() {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const fillCredentials = (targetEmail, targetPassword, targetRole) => {
+    setEmail(targetEmail);
+    setPassword(targetPassword);
+    setRole(targetRole);
+    setMode('login');
+    setErrorMsg('');
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setErrorMsg('');
+
     if (mode === 'login') {
-      loginAs(role);
+      const res = loginWithCredentials(email, password, role);
+      if (!res.success) {
+        setErrorMsg(res.message || 'Login failed. Please verify your credentials.');
+        return;
+      }
+      if (res.role === 'customer') navigate('/customer-dashboard');
+      else if (res.role === 'worker') navigate('/worker-dashboard');
+      else navigate('/admin-dashboard');
     } else {
-      const newUser = {
-        uid: `u-${Date.now()}`,
+      const newUser = registerUser({
         name: name || "Customer User",
         phone: phone || "+91 98765 43210",
-        email: email || "member@skillconnect.local",
+        email: email || "user@skillconnect.ap",
+        password: password || "password123",
         role: role,
         serviceArea: "Vijayawada"
-      };
-      setCurrentUser(newUser);
-    }
+      });
 
-    if (role === 'customer') navigate('/customer-dashboard');
-    else if (role === 'worker') navigate('/worker-dashboard');
-    else navigate('/admin-dashboard');
+      if (role === 'customer') navigate('/customer-dashboard');
+      else if (role === 'worker') navigate('/worker-dashboard');
+      else navigate('/admin-dashboard');
+    }
   };
 
   const handleQuickDemoLogin = (targetRole) => {
@@ -46,9 +63,9 @@ export default function LoginSignup() {
 
   return (
     <div style={{ paddingTop: '3rem', paddingBottom: '4.5rem' }}>
-      <div className="container" style={{ maxWidth: '520px' }}>
+      <div className="container" style={{ maxWidth: '540px' }}>
         {/* Top Brand Card */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
           <div style={{
             width: '52px',
             height: '52px',
@@ -81,9 +98,9 @@ export default function LoginSignup() {
           boxShadow: 'var(--shadow-md)'
         }}>
           <div style={{ fontSize: '0.78rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700, marginBottom: '0.65rem' }}>
-            ⚡ Instant 1-Click Examiner & Presentation Demo Logins:
+            ⚡ 1-Click Instant Demo Logins:
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
             <button
               onClick={() => handleQuickDemoLogin('customer')}
               className="btn btn-sm"
@@ -102,11 +119,68 @@ export default function LoginSignup() {
           <button
             onClick={() => handleQuickDemoLogin('admin')}
             className="btn btn-sm"
-            style={{ width: '100%', marginTop: '0.5rem', backgroundColor: '#F59E0B', color: '#10213F', fontSize: '0.78rem', fontWeight: 700 }}
+            style={{ width: '100%', backgroundColor: '#F59E0B', color: '#10213F', fontSize: '0.78rem', fontWeight: 700, marginBottom: '1rem' }}
           >
-            🛡️ Platform Admin (Inspector)
+            🛡️ Platform Admin (AP State Portal)
           </button>
+
+          {/* Explicit Credentials Table for Manual Login */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '0.85rem' }}>
+            <div style={{ fontSize: '0.75rem', color: '#38BDF8', fontWeight: 700, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              🔑 System Accounts & Passwords (Tap to auto-fill):
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.75rem' }}>
+              <div 
+                onClick={() => fillCredentials('keerthana@example.com', 'password123', 'customer')}
+                style={{ cursor: 'pointer', padding: '0.35rem 0.5rem', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
+                <div>
+                  <span style={{ color: '#34D399', fontWeight: 600 }}>Citizen:</span> keerthana@example.com
+                </div>
+                <span style={{ color: '#94A3B8' }}>Pass: <code style={{ color: '#FCD34D' }}>password123</code></span>
+              </div>
+
+              <div 
+                onClick={() => fillCredentials('aarav.masonry@example.com', 'password123', 'worker')}
+                style={{ cursor: 'pointer', padding: '0.35rem 0.5rem', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
+                <div>
+                  <span style={{ color: '#60A5FA', fontWeight: 600 }}>Worker:</span> aarav.masonry@example.com
+                </div>
+                <span style={{ color: '#94A3B8' }}>Pass: <code style={{ color: '#FCD34D' }}>password123</code></span>
+              </div>
+
+              <div 
+                onClick={() => fillCredentials('admin@skillconnect.gov.in', 'APADMIN@2026', 'customer')}
+                style={{ cursor: 'pointer', padding: '0.35rem 0.5rem', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
+                <div>
+                  <span style={{ color: '#F87171', fontWeight: 600 }}>Admin:</span> admin@skillconnect.gov.in
+                </div>
+                <span style={{ color: '#94A3B8' }}>Pass: <code style={{ color: '#FCD34D' }}>APADMIN@2026</code></span>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Error message */}
+        {errorMsg && (
+          <div style={{
+            backgroundColor: '#FEF2F2',
+            border: '1px solid #FCA5A5',
+            color: '#B91C1C',
+            borderRadius: 'var(--radius-md)',
+            padding: '0.75rem 1rem',
+            marginBottom: '1rem',
+            fontSize: '0.85rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <ShieldAlert size={16} />
+            <span>{errorMsg}</span>
+          </div>
+        )}
 
         {/* Form Card */}
         <div className="card" style={{ padding: '2rem' }}>
