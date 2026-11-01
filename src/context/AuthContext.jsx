@@ -46,7 +46,7 @@ export function AuthProvider({ children }) {
         console.error(e);
       }
     }
-    return DEMO_USERS.customer;
+    return null;
   });
 
   const [registeredUsers, setRegisteredUsers] = useState(() => {

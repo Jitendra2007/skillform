@@ -22,7 +22,9 @@ import {
   Truck,
   Flower2,
   Settings,
-  Star
+  Star,
+  User,
+  Briefcase
 } from 'lucide-react';
 
 const CATEGORY_ICONS = {
@@ -288,6 +290,150 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 1.5 Role Gateway: "How would you like to use SkillConnect?" */}
+      <section style={{
+        backgroundColor: '#F8FAFC',
+        padding: '2.5rem 0',
+        borderBottom: '1px solid var(--color-border)'
+      }}>
+        <div className="container" style={{ textAlign: 'center' }}>
+          <h2 style={{
+            fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)',
+            fontWeight: 800,
+            color: 'var(--color-navy)',
+            marginBottom: '0.35rem'
+          }}>
+            {lang === 'te' ? 'మీరు SkillConnect ను ఎలా ఉపయోగించాలనుకుంటున్నారు?' : 'How would you like to use SkillConnect?'}
+          </h2>
+          <p style={{
+            color: 'var(--color-text-muted)',
+            fontSize: '0.88rem',
+            marginBottom: '1.75rem'
+          }}>
+            {lang === 'te' ? 'ధృవీకరించబడిన కమ్యూనిటీ నెట్‌వర్కింగ్‌ను ప్రారంభించడానికి మీ పాత్రను ఎంచుకోండి' : 'Choose your role to get started with verified community networking'}
+          </p>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '1.25rem',
+            maxWidth: '860px',
+            margin: '0 auto',
+            textAlign: 'left'
+          }}>
+            {/* Card 1: I am a Customer */}
+            <Link
+              to="/login?role=customer"
+              className="card card-interactive"
+              style={{
+                padding: '1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1.15rem',
+                textDecoration: 'none',
+                backgroundColor: '#FFFFFF',
+                border: '1.5px solid #E2E8F0',
+                borderRadius: '16px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <div style={{
+                width: '52px',
+                height: '52px',
+                borderRadius: '12px',
+                backgroundColor: '#E6F4EA',
+                color: '#137333',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <User size={26} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <span style={{
+                  display: 'inline-block',
+                  fontSize: '0.65rem',
+                  fontWeight: 800,
+                  color: '#137333',
+                  backgroundColor: '#CEEAD6',
+                  padding: '2px 7px',
+                  borderRadius: '4px',
+                  letterSpacing: '0.5px',
+                  marginBottom: '0.3rem',
+                  textTransform: 'uppercase'
+                }}>
+                  {lang === 'te' ? 'కార్మికులను నియమించండి' : 'HIRE SKILLED WORKERS'}
+                </span>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--color-navy)', margin: '0 0 0.25rem 0' }}>
+                  {lang === 'te' ? 'నేను కస్టమర్‌ని' : 'I am a Customer'}
+                </h3>
+                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', margin: 0, lineHeight: 1.45 }}>
+                  {lang === 'te' ? 'ధృవీకరించబడిన వడ్రంగులు, ప్లంబర్లు, ఎలక్ట్రీషియన్లు, పెయింటర్లు మరియు స్థానిక రోజువారీ కార్మికులను నియమించుకోండి.' : 'Looking to hire verified carpenters, plumbers, electricians, painters and local daily labour.'}
+                </p>
+              </div>
+              <ArrowRight size={20} style={{ color: '#137333', flexShrink: 0 }} />
+            </Link>
+
+            {/* Card 2: I am a Worker */}
+            <Link
+              to="/login?role=worker"
+              className="card card-interactive"
+              style={{
+                padding: '1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1.15rem',
+                textDecoration: 'none',
+                backgroundColor: '#FFFFFF',
+                border: '1.5px solid #E2E8F0',
+                borderRadius: '16px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <div style={{
+                width: '52px',
+                height: '52px',
+                borderRadius: '12px',
+                backgroundColor: '#E8F0FE',
+                color: '#1A73E8',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <Briefcase size={26} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <span style={{
+                  display: 'inline-block',
+                  fontSize: '0.65rem',
+                  fontWeight: 800,
+                  color: '#1A73E8',
+                  backgroundColor: '#D2E3FC',
+                  padding: '2px 7px',
+                  borderRadius: '4px',
+                  letterSpacing: '0.5px',
+                  marginBottom: '0.3rem',
+                  textTransform: 'uppercase'
+                }}>
+                  {lang === 'te' ? 'రోజువారీ ఆదాయాన్ని సంపాదించండి' : 'EARN DAILY INCOME'}
+                </span>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--color-navy)', margin: '0 0 0.25rem 0' }}>
+                  {lang === 'te' ? 'నేను కార్మికుడిని' : 'I am a Worker'}
+                </h3>
+                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', margin: 0, lineHeight: 1.45 }}>
+                  {lang === 'te' ? 'ఆధార్ ధృవీకరణ పొందండి, ప్రత్యక్ష కస్టమర్ కాల్స్ & WhatsApp అభ్యర్థనలను స్వీకరించండి మరియు స్థిరమైన ఆదాయాన్ని పొందండి.' : 'Get Aadhaar verified, receive direct customer calls & WhatsApp requests, and build steady income.'}
+                </p>
+              </div>
+              <ArrowRight size={20} style={{ color: '#1A73E8', flexShrink: 0 }} />
+            </Link>
           </div>
         </div>
       </section>

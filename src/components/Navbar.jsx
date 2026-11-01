@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { useAuth, DEMO_USERS } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { 
   Wrench, 
   Globe, 
@@ -12,25 +12,14 @@ import {
   Menu, 
   X,
   Search,
-  Grid,
-  ChevronDown
+  Grid
 } from 'lucide-react';
 
 export default function Navbar() {
   const { lang, toggleLang, t } = useLanguage();
-  const { currentUser, loginAs, logout } = useAuth();
+  const { currentUser, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
-
-  const handleRoleSwitch = (role) => {
-    loginAs(role);
-    setRoleDropdownOpen(false);
-    if (role === 'customer') navigate('/customer-dashboard');
-    else if (role === 'worker') navigate('/worker-dashboard');
-    else if (role === 'admin') navigate('/admin-dashboard');
-  };
 
   const isActive = (path) => location.pathname === path;
 
@@ -43,88 +32,12 @@ export default function Navbar() {
       zIndex: 900,
       boxShadow: 'var(--shadow-sm)'
     }}>
-      {/* Top Demo Bar for Reviewer / Examiner Testing */}
-      <div className="top-demo-bar" style={{
-        backgroundColor: '#10213F',
-        color: '#E2E8F0',
-        padding: '0.35rem 1rem',
-        fontSize: '0.78rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '0.4rem'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{
-            backgroundColor: 'var(--color-primary)',
-            color: '#10213F',
-            fontWeight: 700,
-            padding: '2px 8px',
-            borderRadius: '4px',
-            fontSize: '0.7rem',
-            letterSpacing: '0.5px'
-          }}>
-            AP STATE
-          </span>
-          <span className="demo-bar-text" style={{ color: '#94A3B8', fontSize: '0.72rem' }}>
-            Smart Community Labour Platform • Switch Persona:
-          </span>
-        </div>
-
-        {/* 1-Click Role Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'nowrap', overflowX: 'auto' }}>
-          <button
-            onClick={() => handleRoleSwitch('customer')}
-            style={{
-              padding: '2px 7px',
-              borderRadius: '4px',
-              fontSize: '0.7rem',
-              fontWeight: currentUser?.role === 'customer' ? 700 : 500,
-              backgroundColor: currentUser?.role === 'customer' ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)',
-              color: currentUser?.role === 'customer' ? '#10213F' : '#FFFFFF',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            👤 Customer
-          </button>
-          <button
-            onClick={() => handleRoleSwitch('worker')}
-            style={{
-              padding: '2px 7px',
-              borderRadius: '4px',
-              fontSize: '0.7rem',
-              fontWeight: currentUser?.role === 'worker' ? 700 : 500,
-              backgroundColor: currentUser?.role === 'worker' ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)',
-              color: currentUser?.role === 'worker' ? '#10213F' : '#FFFFFF',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            🔨 Worker
-          </button>
-          <button
-            onClick={() => handleRoleSwitch('admin')}
-            style={{
-              padding: '2px 7px',
-              borderRadius: '4px',
-              fontSize: '0.7rem',
-              fontWeight: currentUser?.role === 'admin' ? 700 : 500,
-              backgroundColor: currentUser?.role === 'admin' ? '#F59E0B' : 'rgba(255,255,255,0.1)',
-              color: currentUser?.role === 'admin' ? '#10213F' : '#FFFFFF',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            🔒 Admin
-          </button>
-        </div>
-      </div>
-
       {/* Main Navigation Bar */}
       <div className="container navbar-container" style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        height: '68px',
+        height: '64px',
       }}>
         {/* Brand Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
@@ -158,7 +71,7 @@ export default function Navbar() {
               </span>
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', lineHeight: 1 }}>
-              {lang === 'te' ? 'కమ్యూనిటీ లేబర్ నెట్‌వర్క్' : 'Community Labour Network'}
+              {lang === 'te' ? 'ఆంధ్రప్రదేశ్ కార్మిక నెట్‌వర్క్' : 'Andhra Pradesh Labour Network'}
             </div>
           </div>
         </Link>
@@ -220,12 +133,12 @@ export default function Navbar() {
         </nav>
 
         {/* Right Action Area */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
           {/* Language Toggle */}
           <button
             onClick={toggleLang}
             className="btn btn-outline btn-sm"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.35rem 0.65rem' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.35rem 0.65rem', borderRadius: '8px' }}
             title="Switch Language (English / తెలుగు)"
           >
             <Globe size={15} style={{ color: 'var(--color-primary-dark)' }} />
@@ -246,7 +159,7 @@ export default function Navbar() {
                     : '/admin-dashboard'
                 }
                 className="btn btn-primary btn-sm"
-                style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.35rem 0.6rem' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.75rem', borderRadius: '8px' }}
               >
                 {currentUser.role === 'customer' && <User size={15} />}
                 {currentUser.role === 'worker' && <Briefcase size={15} />}
@@ -264,20 +177,24 @@ export default function Navbar() {
                 onClick={logout}
                 className="btn btn-outline btn-sm"
                 title={t('nav.logout')}
-                style={{ padding: '0.4rem', color: 'var(--color-text-muted)' }}
+                style={{ padding: '0.4rem', color: 'var(--color-text-muted)', borderRadius: '8px' }}
               >
                 <LogOut size={16} />
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <Link to="/login" className="btn btn-outline btn-sm" style={{ padding: '0.35rem 0.6rem' }}>
-                {t('nav.login')}
-              </Link>
-              <Link to="/register-worker" className="btn btn-primary btn-sm mobile-hide-sm" style={{ padding: '0.35rem 0.6rem' }}>
-                {t('nav.register')}
-              </Link>
-            </div>
+            <Link
+              to="/login"
+              className="btn btn-primary btn-sm"
+              style={{
+                padding: '0.4rem 0.9rem',
+                fontWeight: 600,
+                fontSize: '0.86rem',
+                borderRadius: '8px'
+              }}
+            >
+              {lang === 'te' ? 'లాగిన్' : 'Sign In'}
+            </Link>
           )}
 
           {/* Mobile hamburger button */}
@@ -288,7 +205,9 @@ export default function Navbar() {
               color: 'var(--color-navy)',
               display: 'inline-flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              border: 'none',
+              background: 'transparent'
             }}
             className="mobile-menu-btn"
           >
@@ -335,7 +254,7 @@ export default function Navbar() {
           >
             {lang === 'te' ? 'కార్మికుల నమోదు' : 'Join as Worker'}
           </Link>
-          {currentUser && (
+          {currentUser ? (
             <Link
               to={
                 currentUser.role === 'customer'
@@ -357,6 +276,18 @@ export default function Navbar() {
                 ? t('nav.workerDashboard')
                 : t('nav.adminDashboard')}
             </Link>
+          ) : (
+            <Link
+              to="/login"
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                padding: '0.6rem 0',
+                fontWeight: 700,
+                color: 'var(--color-primary-dark)'
+              }}
+            >
+              {lang === 'te' ? 'లాగిన్' : 'Sign In'}
+            </Link>
           )}
         </div>
       )}
@@ -364,19 +295,10 @@ export default function Navbar() {
       {/* Media query styling for responsive nav */}
       <style>{`
         @media (max-width: 640px) {
-          .top-demo-bar {
-            padding: 0.2rem 0.5rem !important;
-          }
           .navbar-container {
             height: 54px !important;
           }
-          .demo-bar-text {
-            display: none !important;
-          }
           .nav-dashboard-text {
-            display: none !important;
-          }
-          .mobile-hide-sm {
             display: none !important;
           }
         }
