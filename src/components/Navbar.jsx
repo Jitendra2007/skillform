@@ -120,7 +120,7 @@ export default function Navbar() {
       </div>
 
       {/* Main Navigation Bar */}
-      <div className="container" style={{
+      <div className="container navbar-container" style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -364,6 +364,12 @@ export default function Navbar() {
       {/* Media query styling for responsive nav */}
       <style>{`
         @media (max-width: 640px) {
+          .top-demo-bar {
+            padding: 0.2rem 0.5rem !important;
+          }
+          .navbar-container {
+            height: 54px !important;
+          }
           .demo-bar-text {
             display: none !important;
           }

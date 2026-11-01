@@ -116,7 +116,25 @@ export function AuthProvider({ children }) {
   });
 
   const loginAs = (role) => {
-    const user = DEMO_USERS[role] || DEMO_USERS.customer;
+    let user = DEMO_USERS[role] || DEMO_USERS.customer;
+    if (role === 'worker') {
+      try {
+        const storedWorkers = JSON.parse(localStorage.getItem('skillconnect_workers_v3') || '[]');
+        if (storedWorkers.length > 0) {
+          const latestWorker = storedWorkers[0];
+          user = {
+            ...user,
+            workerId: latestWorker.id,
+            uid: latestWorker.userId || latestWorker.id,
+            name: latestWorker.name,
+            phone: latestWorker.phone,
+            serviceArea: latestWorker.serviceArea,
+            verificationStatus: latestWorker.verificationStatus,
+            avatar: latestWorker.avatar
+          };
+        }
+      } catch (e) {}
+    }
     if (role === 'admin') {
       setIsAdminUnlocked(true);
       try { sessionStorage.setItem('skillconnect_admin_unlocked', 'true'); } catch (e) {}
@@ -163,7 +181,13 @@ export function AuthProvider({ children }) {
     }
 
     // 2. Check registered accounts
-    const foundRegistered = registeredUsers.find(u => u.email === cleanEmail);
+    const cleanDigits = (v) => (v || '').toString().replace(/\D/g, '');
+    const foundRegistered = registeredUsers.find(u => 
+      u.email === cleanEmail ||
+      (cleanDigits(cleanEmail) && cleanDigits(u.phone) === cleanDigits(cleanEmail)) ||
+      (cleanDigits(cleanEmail) && cleanDigits(u.name) === cleanDigits(cleanEmail)) ||
+      (u.name && u.name.toLowerCase() === cleanEmail)
+    );
     if (foundRegistered) {
       if (cleanPass && foundRegistered.password && foundRegistered.password !== cleanPass) {
         return { success: false, message: 'Incorrect password for this registered email.' };

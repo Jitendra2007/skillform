@@ -41,11 +41,11 @@ export default function CategoriesPage() {
   });
 
   return (
-    <div style={{ paddingTop: '2.5rem', paddingBottom: '4.5rem' }}>
+    <div style={{ paddingTop: '1.5rem', paddingBottom: '3.5rem' }}>
       <div className="container">
         {/* Header */}
         <div style={{ textAlign: 'center', maxWidth: '650px', margin: '0 auto 3rem auto' }}>
-          <h1 style={{ fontSize: '2.2rem', color: 'var(--color-navy)', marginBottom: '0.65rem' }}>
+          <h1 style={{ fontSize: 'clamp(1.5rem, 3.2vw, 2.1rem)', color: 'var(--color-navy)', marginBottom: '0.45rem' }}>
             {lang === 'te' ? 'సేవా వర్గాల డైరెక్టరీ' : 'Browse Trades & Categories'}
           </h1>
           <p style={{ color: 'var(--color-text-muted)', fontSize: '1rem', lineHeight: 1.6 }}>

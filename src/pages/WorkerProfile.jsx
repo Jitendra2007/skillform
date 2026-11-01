@@ -66,7 +66,10 @@ export default function WorkerProfile() {
       customerPhone: customerPhone || "+91 98765 43210",
       customerEmail: customerEmail || "customer@skillconnect.local",
       workerUid: worker.id,
+      workerUserId: worker.userId || null,
       workerName: worker.name,
+      workerPhone: worker.phone || "",
+      workerAvatar: worker.avatar || null,
       skillName: worker.skills?.[0]?.nameEn || "General Service",
       title: jobTitle,
       description: jobDescription,
@@ -83,7 +86,7 @@ export default function WorkerProfile() {
   };
 
   return (
-    <div style={{ paddingTop: '2.5rem', paddingBottom: '4.5rem' }}>
+    <div style={{ paddingTop: '1.5rem', paddingBottom: '3.5rem' }}>
       <div className="container">
         {/* Back Link */}
         <Link
@@ -145,6 +148,7 @@ export default function WorkerProfile() {
                       height: '110px',
                       borderRadius: '50%',
                       objectFit: 'cover',
+                      objectPosition: 'center 20%',
                       border: '3px solid var(--color-primary-light)',
                       boxShadow: 'var(--shadow-md)'
                     }}
@@ -189,7 +193,7 @@ export default function WorkerProfile() {
                     <span>{worker.serviceArea} (AP)</span>
                     <span>•</span>
                     <Award size={16} />
-                    <span>{worker.experienceYears} {t('search.experienceYears')}</span>
+                    <span>{worker.experienceYears ? `${worker.experienceYears} ${t('search.experienceYears')}` : (lang === 'te' ? 'కొత్త కార్మికుడు' : 'Fresher / New')}</span>
                   </div>
 
                   <div>
@@ -313,10 +317,10 @@ export default function WorkerProfile() {
                 </span>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', marginTop: '0.2rem' }}>
                   <span style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--color-navy)' }}>
-                    ₹{worker.indicativeWage}
+                    {worker.indicativeWage ? `₹${worker.indicativeWage}` : (lang === 'te' ? 'కొటేషన్ ఆధారితం' : 'Quote Based')}
                   </span>
                   <span style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-                    / day (Estimate)
+                    {worker.indicativeWage ? '/ day (Estimate)' : ''}
                   </span>
                 </div>
               </div>

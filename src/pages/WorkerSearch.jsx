@@ -91,11 +91,11 @@ export default function WorkerSearch() {
   };
 
   return (
-    <div style={{ paddingTop: '2.5rem', paddingBottom: '4rem' }}>
+    <div style={{ paddingTop: '1.5rem', paddingBottom: '3.5rem' }}>
       <div className="container">
         {/* Header Title */}
         <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '2.1rem', color: 'var(--color-navy)', marginBottom: '0.4rem' }}>
+          <h1 style={{ fontSize: 'clamp(1.5rem, 3.2vw, 2rem)', color: 'var(--color-navy)', marginBottom: '0.25rem' }}>
             {t('search.title')}
           </h1>
           <p style={{ color: 'var(--color-text-muted)', fontSize: '1rem' }}>
@@ -104,7 +104,7 @@ export default function WorkerSearch() {
         </div>
 
         {/* Filter Controls Box */}
-        <div className="card" style={{ marginBottom: '2.5rem', padding: '1.5rem', backgroundColor: '#FFFFFF' }}>
+        <div className="card" style={{ marginBottom: '1.5rem', padding: '1.15rem', backgroundColor: '#FFFFFF' }}>
           {/* Main search row */}
           <div style={{
             display: 'grid',

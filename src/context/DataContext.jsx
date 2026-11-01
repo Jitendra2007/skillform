@@ -6,6 +6,10 @@ import { collection, addDoc, doc, setDoc, onSnapshot } from 'firebase/firestore'
 
 const DataContext = createContext();
 
+function cleanPhone(val) {
+  return (val || '').toString().replace(/\D/g, '');
+}
+
 export function DataProvider({ children }) {
   const [workers, setWorkers] = useState(initializeWorkers);
   const [bookings, setBookings] = useState(initializeBookings);
@@ -66,7 +70,7 @@ export function DataProvider({ children }) {
     ];
   });
 
-  // Real-time Firestore Cloud Listener for Workers, Bookings & Profile Change Requests
+  // Real-time Firestore Cloud Listener for Workers, Bookings, Verifications & Profile Change Requests
   useEffect(() => {
     if (!db) return;
     try {
@@ -85,7 +89,7 @@ export function DataProvider({ children }) {
           }
         }
       }, (err) => {
-        console.info("Firestore workers sync using local persistence:", err.message);
+        console.info("Firestore workers sync notice:", err.message);
       });
 
       const unsubBookings = onSnapshot(collection(db, 'bookings'), (snapshot) => {
@@ -98,7 +102,37 @@ export function DataProvider({ children }) {
           });
         }
       }, (err) => {
-        console.info("Firestore bookings sync using local persistence:", err.message);
+        console.info("Firestore bookings sync notice:", err.message);
+      });
+
+      const unsubVerifications = onSnapshot(collection(db, 'verificationSubmissions'), (snapshot) => {
+        if (!snapshot.empty) {
+          const cloudVerifs = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
+          setVerifications(prev => {
+            const cloudIds = new Set(cloudVerifs.map(cv => cv.id));
+            const localOnly = prev.filter(v => !cloudIds.has(v.id));
+            return [...cloudVerifs, ...localOnly];
+          });
+
+          // Sync verified status to workers state if any cloud verification is approved
+          const approvedWorkerIds = new Set(cloudVerifs.filter(cv => cv.status === 'approved').map(cv => cv.workerId));
+          const approvedWorkerNames = new Set(cloudVerifs.filter(cv => cv.status === 'approved').map(cv => (cv.workerName || '').toLowerCase().trim()));
+          const approvedWorkerPhones = new Set(cloudVerifs.filter(cv => cv.status === 'approved' && cv.workerPhone).map(cv => cleanPhone(cv.workerPhone)));
+
+          if (approvedWorkerIds.size > 0 || approvedWorkerNames.size > 0 || approvedWorkerPhones.size > 0) {
+            setWorkers(prev => prev.map(w => {
+              const matches = approvedWorkerIds.has(w.id) ||
+                (w.name && approvedWorkerNames.has(w.name.toLowerCase().trim())) ||
+                (w.phone && approvedWorkerPhones.has(cleanPhone(w.phone)));
+              if (matches) {
+                return { ...w, verificationStatus: 'verified' };
+              }
+              return w;
+            }));
+          }
+        }
+      }, (err) => {
+        console.info("Firestore verifications listener notice:", err.message);
       });
 
       const unsubChangeRequests = onSnapshot(collection(db, 'profileChangeRequests'), (snapshot) => {
@@ -117,6 +151,7 @@ export function DataProvider({ children }) {
       return () => {
         unsubWorkers();
         unsubBookings();
+        unsubVerifications();
         unsubChangeRequests();
       };
     } catch (err) {
@@ -124,7 +159,7 @@ export function DataProvider({ children }) {
     }
   }, []);
 
-  // Sync to local storage with v3 key
+  // Sync to local storage
   useEffect(() => {
     localStorage.setItem('skillconnect_workers_v3', JSON.stringify(workers));
   }, [workers]);
@@ -220,7 +255,7 @@ export function DataProvider({ children }) {
   };
 
   const createBooking = async (bookingData) => {
-    const bookingId = `b-${Date.now().toString().slice(-4)}`;
+    const bookingId = `b-${Date.now().toString().slice(-5)}`;
     const newBooking = {
       id: bookingId,
       createdAt: new Date().toISOString().split('T')[0],
@@ -228,9 +263,18 @@ export function DataProvider({ children }) {
       quotation: null,
       ...bookingData
     };
+
+    // Immediate state update
     setBookings(prev => [newBooking, ...prev]);
 
-    // Sync to Cloud Firestore
+    // Immediate localStorage persist
+    try {
+      const stored = JSON.parse(localStorage.getItem('skillconnect_bookings_v2') || '[]');
+      const updated = [newBooking, ...stored.filter(b => b.id !== bookingId)];
+      localStorage.setItem('skillconnect_bookings_v2', JSON.stringify(updated));
+    } catch (e) {}
+
+    // Cloud Firestore Sync
     try {
       if (db) {
         await setDoc(doc(db, 'bookings', bookingId), newBooking);
@@ -242,10 +286,11 @@ export function DataProvider({ children }) {
     return newBooking;
   };
 
-  const submitQuotation = (bookingId, quoteDetails) => {
+  const submitQuotation = async (bookingId, quoteDetails) => {
+    let updatedBooking = null;
     setBookings(prev => prev.map(b => {
       if (b.id === bookingId) {
-        return {
+        updatedBooking = {
           ...b,
           status: 'quoted',
           quotation: {
@@ -254,68 +299,133 @@ export function DataProvider({ children }) {
             ...quoteDetails
           }
         };
+        return updatedBooking;
       }
       return b;
     }));
+
+    if (updatedBooking && db) {
+      try {
+        await setDoc(doc(db, 'bookings', bookingId), updatedBooking, { merge: true });
+      } catch (e) {}
+    }
   };
 
-  const acceptQuotation = (bookingId) => {
+  const acceptQuotation = async (bookingId) => {
     setBookings(prev => prev.map(b => {
       if (b.id === bookingId) {
         return { ...b, status: 'quote_accepted' };
       }
       return b;
     }));
+
+    if (db) {
+      try {
+        await setDoc(doc(db, 'bookings', bookingId), { status: 'quote_accepted' }, { merge: true });
+      } catch (e) {}
+    }
   };
 
-  const declineQuotation = (bookingId) => {
+  const declineQuotation = async (bookingId) => {
     setBookings(prev => prev.map(b => {
       if (b.id === bookingId) {
         return { ...b, status: 'cancelled' };
       }
       return b;
     }));
+
+    if (db) {
+      try {
+        await setDoc(doc(db, 'bookings', bookingId), { status: 'cancelled' }, { merge: true });
+      } catch (e) {}
+    }
   };
 
-  const updateJobStatus = (bookingId, status) => {
+  const updateJobStatus = async (bookingId, status) => {
     setBookings(prev => prev.map(b => {
       if (b.id === bookingId) {
         return { ...b, status };
       }
       return b;
     }));
+
+    if (db) {
+      try {
+        await setDoc(doc(db, 'bookings', bookingId), { status }, { merge: true });
+      } catch (e) {}
+    }
   };
 
-  const confirmCompletion = (bookingId) => {
+  const confirmCompletion = async (bookingId) => {
     setBookings(prev => prev.map(b => {
       if (b.id === bookingId) {
         return { ...b, status: 'completed', completionConfirmedAt: new Date().toISOString() };
       }
       return b;
     }));
+
+    if (db) {
+      try {
+        await setDoc(doc(db, 'bookings', bookingId), { status: 'completed', completionConfirmedAt: new Date().toISOString() }, { merge: true });
+      } catch (e) {}
+    }
   };
 
-  const approveVerification = (verifId) => {
+  const approveVerification = async (verifId) => {
     let targetWorkerId = null;
+    let targetWorkerName = null;
+    let targetWorkerPhone = null;
+
     setVerifications(prev => prev.map(v => {
       if (v.id === verifId) {
         targetWorkerId = v.workerId;
+        targetWorkerName = v.workerName;
+        targetWorkerPhone = v.workerPhone;
         return { ...v, status: 'approved' };
       }
       return v;
     }));
 
-    if (targetWorkerId) {
-      setWorkers(prev => prev.map(w => {
-        if (w.id === targetWorkerId) {
-          return { ...w, verificationStatus: 'verified' };
+    // Update workers array matching by ID, Name or Phone
+    setWorkers(prev => prev.map(w => {
+      const isMatch = (targetWorkerId && w.id === targetWorkerId) ||
+        (targetWorkerName && w.name && w.name.toLowerCase().trim() === targetWorkerName.toLowerCase().trim()) ||
+        (targetWorkerPhone && cleanPhone(w.phone) === cleanPhone(targetWorkerPhone));
+
+      if (isMatch) {
+        return { ...w, verificationStatus: 'verified' };
+      }
+      return w;
+    }));
+
+    // Update current user if matching
+    try {
+      const cur = JSON.parse(localStorage.getItem('skillconnect_current_user') || 'null');
+      if (cur) {
+        const matchesCur = (targetWorkerId && (cur.workerId === targetWorkerId || cur.uid === targetWorkerId)) ||
+          (targetWorkerName && cur.name && cur.name.toLowerCase().trim() === targetWorkerName.toLowerCase().trim()) ||
+          (targetWorkerPhone && cleanPhone(cur.phone || cur.name) === cleanPhone(targetWorkerPhone));
+        if (matchesCur) {
+          cur.verificationStatus = 'verified';
+          localStorage.setItem('skillconnect_current_user', JSON.stringify(cur));
         }
-        return w;
-      }));
+      }
+    } catch (e) {}
+
+    // Immediate Firestore Cloud Sync for both workerProfiles and verificationSubmissions
+    try {
+      if (db) {
+        await setDoc(doc(db, 'verificationSubmissions', verifId), { status: 'approved' }, { merge: true });
+        if (targetWorkerId) {
+          await setDoc(doc(db, 'workerProfiles', targetWorkerId), { verificationStatus: 'verified' }, { merge: true });
+        }
+      }
+    } catch (err) {
+      console.warn("Firestore verification approval sync notice:", err.message);
     }
   };
 
-  const rejectVerification = (verifId, notes) => {
+  const rejectVerification = async (verifId, notes) => {
     let targetWorkerId = null;
     setVerifications(prev => prev.map(v => {
       if (v.id === verifId) {
@@ -332,6 +442,15 @@ export function DataProvider({ children }) {
         }
         return w;
       }));
+
+      try {
+        if (db) {
+          await setDoc(doc(db, 'verificationSubmissions', verifId), { status: 'rejected', notes: notes || '' }, { merge: true });
+          await setDoc(doc(db, 'workerProfiles', targetWorkerId), { verificationStatus: 'rejected' }, { merge: true });
+        }
+      } catch (err) {
+        console.warn("Firestore verification rejection sync notice:", err.message);
+      }
     }
   };
 
@@ -342,20 +461,20 @@ export function DataProvider({ children }) {
 
     const fullWorker = {
       id: workerId,
-      userId: `u-${Date.now().toString().slice(-4)}`,
+      userId: newWorker.userId || `u-${Date.now().toString().slice(-4)}`,
       name: newWorker.fullName,
       gender: gender,
       phone: newWorker.phone,
       email: newWorker.email || `${newWorker.fullName.toLowerCase().replace(/\s+/g, '')}@skillconnect.test`,
       bio: newWorker.bio,
-      experienceYears: parseInt(newWorker.experienceYears || '2', 10),
+      experienceYears: (newWorker.experienceYears !== undefined && newWorker.experienceYears !== '') ? parseInt(newWorker.experienceYears, 10) : 0,
       serviceArea: newWorker.serviceArea || "Vijayawada",
       availability: "available",
       verificationStatus: "pending",
       skills: newWorker.skills || [{ id: 2, nameEn: "Plumbing", nameTe: "ప్లంబింగ్" }],
       rating: 5.0,
       reviewCount: 0,
-      indicativeWage: parseInt(newWorker.indicativeWage || '650', 10),
+      indicativeWage: (newWorker.indicativeWage !== undefined && newWorker.indicativeWage !== '') ? parseInt(newWorker.indicativeWage, 10) : null,
       avatar: avatar
     };
 
@@ -366,6 +485,7 @@ export function DataProvider({ children }) {
       id: `verif-${Date.now().toString().slice(-4)}`,
       workerId: workerId,
       workerName: newWorker.fullName,
+      workerPhone: newWorker.phone,
       trade: newWorker.skills?.map(s => s.nameEn).join(', ') || "General Labour",
       area: newWorker.serviceArea || "Vijayawada",
       documentType: "Masked Aadhaar Proof",

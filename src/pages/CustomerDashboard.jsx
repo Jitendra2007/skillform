@@ -52,7 +52,11 @@ export default function CustomerDashboard() {
   const [actionNotice, setActionNotice] = useState('');
 
   const customerBookings = bookings.filter(b => 
-    b.customerUid === (currentUser?.uid || "cust-demo-1") || !b.customerUid
+    b.customerUid === currentUser?.uid || 
+    (currentUser?.name && b.customerName && b.customerName.toLowerCase() === currentUser.name.toLowerCase()) ||
+    (currentUser?.phone && b.customerPhone && b.customerPhone.replace(/\D/g, '') === currentUser.phone.replace(/\D/g, '')) ||
+    b.customerUid === "cust-demo-1" ||
+    !b.customerUid
   );
 
   const myChangeRequests = profileChangeRequests.filter(r => 
@@ -121,7 +125,7 @@ export default function CustomerDashboard() {
   };
 
   return (
-    <div style={{ paddingTop: '2.5rem', paddingBottom: '4.5rem' }}>
+    <div style={{ paddingTop: '1.5rem', paddingBottom: '3.5rem' }}>
       <div className="container">
         {/* Welcome Header */}
         <div style={{
@@ -133,7 +137,7 @@ export default function CustomerDashboard() {
           marginBottom: '2rem'
         }}>
           <div>
-            <h1 style={{ fontSize: '2rem', color: 'var(--color-navy)', marginBottom: '0.35rem' }}>
+            <h1 style={{ fontSize: 'clamp(1.4rem, 2.5vw, 1.85rem)', color: 'var(--color-navy)', marginBottom: '0.35rem' }}>
               {t('dashboards.customer.title')}
             </h1>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>

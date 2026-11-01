@@ -62,7 +62,7 @@ export default function LoginSignup() {
   };
 
   return (
-    <div style={{ paddingTop: '3rem', paddingBottom: '4.5rem' }}>
+    <div style={{ paddingTop: '1.5rem', paddingBottom: '3.5rem' }}>
       <div className="container" style={{ maxWidth: '540px' }}>
         {/* Top Brand Card */}
         <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>

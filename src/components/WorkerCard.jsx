@@ -24,6 +24,7 @@ export default function WorkerCard({ worker }) {
               height: '72px',
               borderRadius: '50%',
               objectFit: 'cover',
+              objectPosition: 'center 20%',
               border: '2px solid var(--color-primary-light)',
               boxShadow: '0 2px 5px rgba(0,0,0,0.08)',
               display: 'block'
@@ -80,7 +81,7 @@ export default function WorkerCard({ worker }) {
             <span>{worker.serviceArea || 'Vijayawada'}</span>
             <span style={{ margin: '0 0.25rem' }}>•</span>
             <Award size={14} style={{ flexShrink: 0 }} />
-            <span>{worker.experienceYears || '2'} {t('search.experienceYears')}</span>
+            <span>{worker.experienceYears ? `${worker.experienceYears} ${t('search.experienceYears')}` : (lang === 'te' ? 'కొత్త కార్మికుడు' : 'Fresher')}</span>
           </div>
 
           <div style={{ marginTop: '0.4rem' }}>
@@ -139,7 +140,7 @@ export default function WorkerCard({ worker }) {
             {lang === 'te' ? 'రోజువారీ వేతనం (అంచనా)' : 'Indicative Wage'}
           </span>
           <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-navy)' }}>
-            ₹{worker.indicativeWage} <span style={{ fontSize: '0.75rem', fontWeight: 400, color: 'var(--color-text-muted)' }}>/ day</span>
+            {worker.indicativeWage ? `₹${worker.indicativeWage}` : (lang === 'te' ? 'కొటేషన్ ఆధారితం' : 'Quote Based')} {worker.indicativeWage && <span style={{ fontSize: '0.75rem', fontWeight: 400, color: 'var(--color-text-muted)' }}>/ day</span>}
           </span>
         </div>
 

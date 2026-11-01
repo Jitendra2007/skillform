@@ -27,6 +27,7 @@ export default function WorkerDashboard() {
     submitQuotation, 
     updateJobStatus, 
     workers, 
+    verifications = [], 
     profileChangeRequests = [], 
     submitProfileChangeRequest 
   } = useData();
@@ -47,7 +48,49 @@ export default function WorkerDashboard() {
   const [workerReason, setWorkerReason] = useState('');
 
   // Find worker record matching currentUser or default
-  const workerProfile = workers.find(w => w.id === currentUser?.uid || w.name === currentUser?.name) || workers[0];
+  const cleanDigits = (val) => (val || '').toString().replace(/\D/g, '');
+
+  // Robust matching to find the active worker profile
+  const workerProfile = workers.find(w => {
+    if (!currentUser) return false;
+    if (currentUser.workerId && w.id === currentUser.workerId) return true;
+    if (currentUser.uid && (w.id === currentUser.uid || w.userId === currentUser.uid)) return true;
+    
+    const curPhoneDigits = cleanDigits(currentUser.phone || currentUser.name);
+    const wPhoneDigits = cleanDigits(w.phone);
+    if (curPhoneDigits && wPhoneDigits && curPhoneDigits === wPhoneDigits) return true;
+    if (curPhoneDigits && cleanDigits(w.name) === curPhoneDigits) return true;
+
+    if (currentUser.name && w.name && currentUser.name.trim().toLowerCase() === w.name.trim().toLowerCase()) return true;
+    if (currentUser.email && w.email && currentUser.email.trim().toLowerCase() === w.email.trim().toLowerCase()) return true;
+
+    return false;
+  }) || (currentUser?.role === 'worker' ? {
+    id: currentUser.workerId || currentUser.uid || `w-${cleanDigits(currentUser.phone || currentUser.name || 'worker')}`,
+    userId: currentUser.uid,
+    name: currentUser.name || "Skilled Worker",
+    phone: currentUser.phone || currentUser.name || "+91 98489 15830",
+    serviceArea: currentUser.serviceArea || "Vijayawada",
+    verificationStatus: currentUser.verificationStatus || 'pending',
+    skills: [{ id: 1, nameEn: "General Maintenance", nameTe: "సాధారణ సేవలు" }],
+    rating: 5.0,
+    reviewCount: 0,
+    indicativeWage: 750,
+    avatar: currentUser.avatar || null
+  } : workers[0]);
+
+  // Check if verified in workerProfile, currentUser, or approved in verifications list
+  const isApprovedInVerifications = verifications.some(v => 
+    v.status === 'approved' && (
+      v.workerId === workerProfile?.id ||
+      (v.workerName && workerProfile?.name && v.workerName.toLowerCase().trim() === workerProfile.name.toLowerCase().trim()) ||
+      (cleanDigits(v.workerPhone) && cleanDigits(v.workerPhone) === cleanDigits(workerProfile?.phone || currentUser?.phone || currentUser?.name))
+    )
+  );
+
+  const isWorkerVerified = workerProfile?.verificationStatus === 'verified' || 
+    currentUser?.verificationStatus === 'verified' || 
+    isApprovedInVerifications;
 
   const myWorkerChangeRequests = profileChangeRequests.filter(r => 
     r.userId === workerProfile?.id || r.userName === workerProfile?.name
@@ -79,7 +122,22 @@ export default function WorkerDashboard() {
   };
 
   const workerBookings = bookings.filter(b => 
-    b.workerUid === workerProfile?.id || b.workerName === workerProfile?.name || !b.workerUid
+    // 1. Match by Worker ID
+    (workerProfile?.id && (b.workerUid === workerProfile.id || b.workerId === workerProfile.id)) ||
+    (currentUser?.workerId && (b.workerUid === currentUser.workerId || b.workerId === currentUser.workerId)) ||
+    (currentUser?.uid && (b.workerUid === currentUser.uid || b.workerUserId === currentUser.uid)) ||
+    (workerProfile?.userId && (b.workerUid === workerProfile.userId || b.workerUserId === workerProfile.userId)) ||
+    // 2. Match by Worker Phone
+    (cleanDigits(workerProfile?.phone || currentUser?.phone || currentUser?.name) && 
+     cleanDigits(b.workerPhone) && 
+     cleanDigits(workerProfile?.phone || currentUser?.phone || currentUser?.name) === cleanDigits(b.workerPhone)) ||
+    // 3. Match by Worker Name
+    (workerProfile?.name && b.workerName && workerProfile.name.trim().toLowerCase() === b.workerName.trim().toLowerCase()) ||
+    (currentUser?.name && b.workerName && currentUser.name.trim().toLowerCase() === b.workerName.trim().toLowerCase()) ||
+    // 4. Match by Phone digits in Worker Name or UID
+    (cleanDigits(workerProfile?.phone || currentUser?.phone || currentUser?.name) &&
+     (cleanDigits(b.workerUid) === cleanDigits(workerProfile?.phone || currentUser?.phone || currentUser?.name) ||
+      cleanDigits(b.workerName) === cleanDigits(workerProfile?.phone || currentUser?.phone || currentUser?.name)))
   );
 
   const incomingRequests = workerBookings.filter(b => b.status === 'requested');
@@ -120,7 +178,7 @@ export default function WorkerDashboard() {
   };
 
   return (
-    <div style={{ paddingTop: '2.5rem', paddingBottom: '4.5rem' }}>
+    <div style={{ paddingTop: '1.5rem', paddingBottom: '3.5rem' }}>
       <div className="container">
         {/* Welcome & Top Row */}
         <div style={{
@@ -133,10 +191,10 @@ export default function WorkerDashboard() {
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-              <h1 style={{ fontSize: '2rem', color: 'var(--color-navy)' }}>
+              <h1 style={{ fontSize: 'clamp(1.4rem, 2.5vw, 1.85rem)', color: 'var(--color-navy)' }}>
                 {t('dashboards.worker.title')}
               </h1>
-              {workerProfile?.verificationStatus === 'verified' ? (
+              {isWorkerVerified ? (
                 <span className="badge badge-verified">
                   <ShieldCheck size={13} /> {t('profile.verifiedWorker')}
                 </span>
@@ -147,7 +205,7 @@ export default function WorkerDashboard() {
               )}
             </div>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>
-              {t('dashboards.worker.welcome')}, <strong>{workerProfile?.name || "Aarav Reddy"}</strong> ({workerProfile?.serviceArea})
+              {t('dashboards.worker.welcome')}, <strong>{workerProfile?.name || currentUser?.name || "Aarav Reddy"}</strong> ({workerProfile?.serviceArea || currentUser?.serviceArea || "Andhra Pradesh"})
             </p>
           </div>
 
@@ -232,7 +290,7 @@ export default function WorkerDashboard() {
         )}
 
         {/* Verification Status Alert banner if pending */}
-        {workerProfile?.verificationStatus === 'pending' && (
+        {!isWorkerVerified && (
           <div style={{
             backgroundColor: '#FEF3C7',
             border: '1px solid #F59E0B',

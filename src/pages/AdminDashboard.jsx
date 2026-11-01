@@ -232,7 +232,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div style={{ paddingTop: '2.5rem', paddingBottom: '4.5rem' }}>
+    <div style={{ paddingTop: '1.5rem', paddingBottom: '3.5rem' }}>
       <div className="container">
         {/* Admin Header with Shield Icon */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
@@ -252,7 +252,7 @@ export default function AdminDashboard() {
               <ShieldAlert size={15} />
               <span>PROTECTED ADMINISTRATIVE CONTROL</span>
             </div>
-            <h1 style={{ fontSize: '2.1rem', color: 'var(--color-navy)' }}>
+            <h1 style={{ fontSize: 'clamp(1.4rem, 2.5vw, 1.95rem)', color: 'var(--color-navy)' }}>
               {t('dashboards.admin.title')}
             </h1>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>
