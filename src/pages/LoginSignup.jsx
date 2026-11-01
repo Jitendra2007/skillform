@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { useAuth, DEMO_USERS } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
+import { useData } from '../context/DataContext';
 import { Wrench, ShieldAlert } from 'lucide-react';
 
 export default function LoginSignup() {
   const { lang, t } = useLanguage();
-  const { loginAs, loginWithCredentials, registerUser } = useAuth();
+  const { loginWithCredentials, registerUser } = useAuth();
+  const { workers } = useData();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -31,10 +33,29 @@ export default function LoginSignup() {
     e.preventDefault();
     setErrorMsg('');
 
+    if (role === 'admin') {
+      const cleanPass = (password || '').trim();
+      const cleanId = (identifier || '').toLowerCase().trim();
+      if (
+        cleanPass.toUpperCase() === 'APADMIN@2026' ||
+        cleanPass === '9848' ||
+        cleanPass === 'admin123' ||
+        cleanId === 'admin@skillconnect.gov.in'
+      ) {
+        const res = loginWithCredentials(identifier || 'admin@skillconnect.gov.in', password, 'admin');
+        if (res.success) {
+          navigate('/admin-dashboard');
+          return;
+        }
+      }
+      setErrorMsg(lang === 'te' ? 'చెల్లని అడ్మిన్ పాస్‌వర్డ్ లేదా ఈమెయిల్. ప్రాప్యత నిరాకరించబడింది.' : 'Invalid Admin Passcode or Email. Unauthorized access restricted.');
+      return;
+    }
+
     if (mode === 'login') {
       const res = loginWithCredentials(identifier, password, role);
       if (!res.success) {
-        setErrorMsg(res.message || 'Login failed. Please verify your credentials.');
+        setErrorMsg(res.message || (lang === 'te' ? 'లాగిన్ విఫలమైంది. దయచేసి వివరాలు సరిచూసుకోండి.' : 'Login failed. Please verify your credentials or register below.'));
         return;
       }
       if (res.role === 'customer') navigate('/customer-dashboard');
@@ -57,13 +78,6 @@ export default function LoginSignup() {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    loginAs(role);
-    if (role === 'customer') navigate('/customer-dashboard');
-    else if (role === 'worker') navigate('/worker-dashboard');
-    else navigate('/admin-dashboard');
-  };
-
   return (
     <div style={{
       minHeight: 'calc(100vh - 130px)',
@@ -74,7 +88,7 @@ export default function LoginSignup() {
       padding: '2rem 1rem'
     }}>
       <div style={{
-        maxWidth: '960px',
+        maxWidth: '920px',
         width: '100%',
         backgroundColor: '#FFFFFF',
         borderRadius: '20px',
@@ -157,7 +171,7 @@ export default function LoginSignup() {
           }}>
             <button
               type="button"
-              onClick={() => { setRole('customer'); setErrorMsg(''); }}
+              onClick={() => { setRole('customer'); setMode('login'); setErrorMsg(''); }}
               style={{
                 border: 'none',
                 padding: '0.55rem',
@@ -174,7 +188,7 @@ export default function LoginSignup() {
             </button>
             <button
               type="button"
-              onClick={() => { setRole('worker'); setErrorMsg(''); }}
+              onClick={() => { setRole('worker'); setMode('login'); setErrorMsg(''); }}
               style={{
                 border: 'none',
                 padding: '0.55rem',
@@ -191,7 +205,7 @@ export default function LoginSignup() {
             </button>
             <button
               type="button"
-              onClick={() => { setRole('admin'); setErrorMsg(''); }}
+              onClick={() => { setRole('admin'); setMode('login'); setErrorMsg(''); }}
               style={{
                 border: 'none',
                 padding: '0.55rem',
@@ -229,7 +243,7 @@ export default function LoginSignup() {
 
           {/* Main Login Form */}
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {mode === 'register' && (
+            {mode === 'register' && role === 'customer' && (
               <div>
                 <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
                   Full Legal Name *
@@ -254,14 +268,20 @@ export default function LoginSignup() {
 
             <div>
               <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                Mobile Number or Email *
+                {role === 'admin' ? 'Admin Official Email or ID *' : role === 'worker' ? 'Worker Mobile Number or Email *' : 'Mobile Number or Email *'}
               </label>
               <input
                 type="text"
                 required
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="Enter mobile number or email"
+                placeholder={
+                  role === 'admin' 
+                    ? 'admin@skillconnect.gov.in' 
+                    : role === 'worker' 
+                    ? 'Enter registered mobile (e.g. 9848915830)' 
+                    : 'Enter mobile number or email'
+                }
                 style={{
                   width: '100%',
                   padding: '0.7rem 0.9rem',
@@ -276,11 +296,11 @@ export default function LoginSignup() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
                 <label style={{ fontSize: '0.84rem', fontWeight: 600, color: '#334155', margin: 0 }}>
-                  Password *
+                  {role === 'admin' ? 'Security Passcode *' : 'Password *'}
                 </label>
-                {mode === 'login' && (
+                {role !== 'admin' && mode === 'login' && (
                   <span
-                    onClick={() => alert(lang === 'te' ? 'దయచేసి మీ మొబైల్ OTP లేదా అడ్మిన్‌ను సంప్రదించండి.' : 'Default demo password is password123 (or APADMIN@2026 for admin)')}
+                    onClick={() => alert(lang === 'te' ? 'దయచేసి మీరు నమోదు చేసుకున్న పాస్‌వర్డ్‌ను ఉపయోగించండి.' : 'Please enter the password you chose during registration.')}
                     style={{ fontSize: '0.8rem', color: '#0F766E', fontWeight: 600, cursor: 'pointer' }}
                   >
                     Forgot Password?
@@ -292,7 +312,7 @@ export default function LoginSignup() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
+                placeholder={role === 'admin' ? 'Enter admin passcode' : 'Enter password'}
                 style={{
                   width: '100%',
                   padding: '0.7rem 0.9rem',
@@ -325,93 +345,38 @@ export default function LoginSignup() {
             </button>
           </form>
 
-          {/* Register Link Switcher */}
-          <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.86rem', color: '#64748B' }}>
-            {mode === 'login' ? (
-              <>
-                Don't have an account?{' '}
-                {role === 'worker' ? (
-                  <Link to="/register-worker" style={{ color: '#0F766E', fontWeight: 700, textDecoration: 'none' }}>
-                    Register
-                  </Link>
-                ) : (
+          {/* Register Link Switcher (Hidden for admin) */}
+          {role !== 'admin' && (
+            <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.86rem', color: '#64748B' }}>
+              {mode === 'login' ? (
+                <>
+                  Don't have an account?{' '}
+                  {role === 'worker' ? (
+                    <Link to="/register-worker" style={{ color: '#0F766E', fontWeight: 700, textDecoration: 'none' }}>
+                      Register
+                    </Link>
+                  ) : (
+                    <span
+                      onClick={() => setMode('register')}
+                      style={{ color: '#0F766E', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      Register
+                    </span>
+                  )}
+                </>
+              ) : (
+                <>
+                  Already have an account?{' '}
                   <span
-                    onClick={() => setMode('register')}
+                    onClick={() => setMode('login')}
                     style={{ color: '#0F766E', fontWeight: 700, cursor: 'pointer' }}
                   >
-                    Register
+                    Login
                   </span>
-                )}
-              </>
-            ) : (
-              <>
-                Already have an account?{' '}
-                <span
-                  onClick={() => setMode('login')}
-                  style={{ color: '#0F766E', fontWeight: 700, cursor: 'pointer' }}
-                >
-                  Login
-                </span>
-              </>
-            )}
-          </div>
-
-          {/* Divider */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            margin: '1.35rem 0',
-            color: '#94A3B8',
-            fontSize: '0.72rem',
-            fontWeight: 700,
-            letterSpacing: '0.5px'
-          }}>
-            <div style={{ flex: 1, height: '1px', backgroundColor: '#E2E8F0' }} />
-            <span style={{ padding: '0 0.75rem' }}>OR CONTINUE WITH</span>
-            <div style={{ flex: 1, height: '1px', backgroundColor: '#E2E8F0' }} />
-          </div>
-
-          {/* Sign in with Google Button */}
-          <button
-            type="button"
-            onClick={handleGoogleSignIn}
-            style={{
-              width: '100%',
-              padding: '0.68rem',
-              backgroundColor: '#FFFFFF',
-              border: '1.5px solid #E2E8F0',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.65rem',
-              fontSize: '0.88rem',
-              fontWeight: 600,
-              color: '#334155',
-              cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24">
-              <path
-                fill="#4285F4"
-                d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.04 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-              />
-            </svg>
-            <span>Sign in with Google</span>
-          </button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

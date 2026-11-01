@@ -73,30 +73,12 @@ export function AuthProvider({ children }) {
   });
 
   const loginAs = (role) => {
-    if (role === 'admin') {
-      setIsAdminUnlocked(true);
-      try { sessionStorage.setItem('skillconnect_admin_unlocked', 'true'); } catch (e) {}
-      setCurrentUser(DEMO_USERS.admin);
-      return DEMO_USERS.admin;
-    }
-
-    // Default to the first registered user with this role, or a fresh blank persona
     const found = registeredUsers.find(u => u.role === role);
     if (found) {
       setCurrentUser(found);
       return found;
     }
-
-    const blankUser = {
-      uid: `u-${Date.now().toString().slice(-6)}`,
-      name: role === 'worker' ? 'Registered Worker' : 'Citizen Customer',
-      email: `${role}@skillconnect.ap`,
-      role: role,
-      serviceArea: 'Vijayawada',
-      phone: '+91 98765 43210'
-    };
-    setCurrentUser(blankUser);
-    return blankUser;
+    return null;
   };
 
   const registerUser = (userData) => {
