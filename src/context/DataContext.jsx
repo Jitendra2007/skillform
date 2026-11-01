@@ -17,8 +17,9 @@ export function DataProvider({ children }) {
   
   const [complaints, setComplaints] = useState(() => {
     try {
+      localStorage.removeItem('skillconnect_complaints_v3');
       localStorage.removeItem('skillconnect_complaints_v2');
-      const saved = localStorage.getItem('skillconnect_complaints_v3');
+      const saved = localStorage.getItem('skillconnect_complaints_v4');
       if (saved) return JSON.parse(saved);
     } catch (e) {}
     return [];
@@ -26,22 +27,28 @@ export function DataProvider({ children }) {
 
   const [profileChangeRequests, setProfileChangeRequests] = useState(() => {
     try {
+      localStorage.removeItem('skillconnect_change_requests_v2');
       localStorage.removeItem('skillconnect_change_requests_v1');
-      const saved = localStorage.getItem('skillconnect_change_requests_v2');
+      const saved = localStorage.getItem('skillconnect_change_requests_v3');
       if (saved) return JSON.parse(saved);
     } catch (e) {}
     return [];
   });
 
-  // Clear legacy mock data once on mount
+  // Clear all legacy and old demo data once on mount
   useEffect(() => {
     try {
+      localStorage.removeItem('skillconnect_workers_v4');
       localStorage.removeItem('skillconnect_workers_v3');
       localStorage.removeItem('skillconnect_workers_v2');
+      localStorage.removeItem('skillconnect_bookings_v3');
       localStorage.removeItem('skillconnect_bookings_v2');
       localStorage.removeItem('skillconnect_bookings_v1');
+      localStorage.removeItem('skillconnect_verifications_v3');
       localStorage.removeItem('skillconnect_verifications_v2');
+      localStorage.removeItem('skillconnect_complaints_v3');
       localStorage.removeItem('skillconnect_complaints_v2');
+      localStorage.removeItem('skillconnect_change_requests_v2');
       localStorage.removeItem('skillconnect_change_requests_v1');
     } catch (e) {}
   }, []);
@@ -130,23 +137,23 @@ export function DataProvider({ children }) {
 
   // Sync to local storage
   useEffect(() => {
-    localStorage.setItem('skillconnect_workers_v4', JSON.stringify(workers));
+    localStorage.setItem('skillconnect_workers_v5', JSON.stringify(workers));
   }, [workers]);
 
   useEffect(() => {
-    localStorage.setItem('skillconnect_bookings_v3', JSON.stringify(bookings));
+    localStorage.setItem('skillconnect_bookings_v4', JSON.stringify(bookings));
   }, [bookings]);
 
   useEffect(() => {
-    localStorage.setItem('skillconnect_verifications_v3', JSON.stringify(verifications));
+    localStorage.setItem('skillconnect_verifications_v4', JSON.stringify(verifications));
   }, [verifications]);
 
   useEffect(() => {
-    localStorage.setItem('skillconnect_complaints_v3', JSON.stringify(complaints));
+    localStorage.setItem('skillconnect_complaints_v4', JSON.stringify(complaints));
   }, [complaints]);
 
   useEffect(() => {
-    localStorage.setItem('skillconnect_change_requests_v2', JSON.stringify(profileChangeRequests));
+    localStorage.setItem('skillconnect_change_requests_v3', JSON.stringify(profileChangeRequests));
   }, [profileChangeRequests]);
 
   // Actions
@@ -425,7 +432,7 @@ export function DataProvider({ children }) {
       const filtered = prev.filter(w => w.id !== fullWorker.id && cleanPhone(w.phone) !== cleanPhone(fullWorker.phone));
       const updated = [fullWorker, ...filtered];
       try {
-        localStorage.setItem('skillconnect_workers_v4', JSON.stringify(updated));
+        localStorage.setItem('skillconnect_workers_v5', JSON.stringify(updated));
       } catch (e) {}
       return updated;
     });
@@ -448,7 +455,7 @@ export function DataProvider({ children }) {
       const filtered = prev.filter(v => v.id !== newVerif.id && cleanPhone(v.workerPhone) !== cleanPhone(newVerif.workerPhone));
       const updated = [newVerif, ...filtered];
       try {
-        localStorage.setItem('skillconnect_verifications_v3', JSON.stringify(updated));
+        localStorage.setItem('skillconnect_verifications_v4', JSON.stringify(updated));
       } catch (e) {}
       return updated;
     });

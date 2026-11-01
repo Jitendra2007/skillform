@@ -19,7 +19,9 @@ export const DEMO_USERS = {
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-      const saved = localStorage.getItem('skillconnect_current_user_v2');
+      localStorage.removeItem('skillconnect_current_user_v2');
+      localStorage.removeItem('skillconnect_current_user');
+      const saved = localStorage.getItem('skillconnect_current_user_v3');
       if (saved) return JSON.parse(saved);
     } catch (e) {}
     return null;
@@ -27,9 +29,10 @@ export function AuthProvider({ children }) {
 
   const [registeredUsers, setRegisteredUsers] = useState(() => {
     try {
+      localStorage.removeItem('skillconnect_registered_users_v2');
       localStorage.removeItem('skillconnect_registered_users');
       localStorage.removeItem('skillconnect_current_user');
-      const saved = localStorage.getItem('skillconnect_registered_users_v2');
+      const saved = localStorage.getItem('skillconnect_registered_users_v3');
       if (saved) return JSON.parse(saved);
     } catch (e) {}
     return [];
@@ -39,14 +42,14 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (currentUser) {
-      localStorage.setItem('skillconnect_current_user_v2', JSON.stringify(currentUser));
+      localStorage.setItem('skillconnect_current_user_v3', JSON.stringify(currentUser));
     } else {
-      localStorage.removeItem('skillconnect_current_user_v2');
+      localStorage.removeItem('skillconnect_current_user_v3');
     }
   }, [currentUser]);
 
   useEffect(() => {
-    localStorage.setItem('skillconnect_registered_users_v2', JSON.stringify(registeredUsers));
+    localStorage.setItem('skillconnect_registered_users_v3', JSON.stringify(registeredUsers));
   }, [registeredUsers]);
 
   // Optional Firebase Auth listener
@@ -104,7 +107,7 @@ export function AuthProvider({ children }) {
         return true;
       });
       const updated = [newUser, ...filtered];
-      localStorage.setItem('skillconnect_registered_users_v2', JSON.stringify(updated));
+      localStorage.setItem('skillconnect_registered_users_v3', JSON.stringify(updated));
       return updated;
     });
 
@@ -132,7 +135,7 @@ export function AuthProvider({ children }) {
     // 2. Check saved workers from localStorage
     let savedWorkers = [];
     try {
-      savedWorkers = JSON.parse(localStorage.getItem('skillconnect_workers_v4') || '[]');
+      savedWorkers = JSON.parse(localStorage.getItem('skillconnect_workers_v5') || '[]');
     } catch (e) {}
 
     const matchedWorker = savedWorkers.find(w => 
@@ -172,7 +175,7 @@ export function AuthProvider({ children }) {
       setRegisteredUsers(prev => {
         const filtered = prev.filter(u => cleanDigits(u.phone) !== cleanDigits(workerUser.phone) && u.email !== workerUser.email);
         const updated = [workerUser, ...filtered];
-        localStorage.setItem('skillconnect_registered_users_v2', JSON.stringify(updated));
+        localStorage.setItem('skillconnect_registered_users_v3', JSON.stringify(updated));
         return updated;
       });
 

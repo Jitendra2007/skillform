@@ -1,8 +1,8 @@
 import rawSeed from '../../data/SkillConnect_Full_Demo_Seed.json';
 
-const STORAGE_KEY_WORKERS = 'skillconnect_workers_v4';
-const STORAGE_KEY_BOOKINGS = 'skillconnect_bookings_v3';
-const STORAGE_KEY_VERIFICATIONS = 'skillconnect_verifications_v3';
+const STORAGE_KEY_WORKERS = 'skillconnect_workers_v5';
+const STORAGE_KEY_BOOKINGS = 'skillconnect_bookings_v4';
+const STORAGE_KEY_VERIFICATIONS = 'skillconnect_verifications_v4';
 
 // Available skill trades across Andhra Pradesh
 export const skillsList = rawSeed.skills || [
@@ -19,6 +19,7 @@ export const skillsList = rawSeed.skills || [
 // Clean empty worker initialization (ready for fresh registrations)
 export function initializeWorkers() {
   try {
+    localStorage.removeItem('skillconnect_workers_v4');
     localStorage.removeItem('skillconnect_workers_v3');
     localStorage.removeItem('skillconnect_workers_v2');
   } catch (e) {}
@@ -36,6 +37,7 @@ export function initializeWorkers() {
 // Clean empty booking initialization
 export function initializeBookings() {
   try {
+    localStorage.removeItem('skillconnect_bookings_v3');
     localStorage.removeItem('skillconnect_bookings_v2');
     localStorage.removeItem('skillconnect_bookings_v1');
   } catch (e) {}
@@ -53,6 +55,7 @@ export function initializeBookings() {
 // Clean empty verification submissions
 export function initializeVerifications() {
   try {
+    localStorage.removeItem('skillconnect_verifications_v3');
     localStorage.removeItem('skillconnect_verifications_v2');
     localStorage.removeItem('skillconnect_verifications_v1');
   } catch (e) {}
