@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
+import { db } from '../lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import StarRating from '../components/StarRating';
 import { 
   ShieldCheck, 
@@ -31,26 +33,47 @@ export default function WorkerProfile() {
   const [successBanner, setSuccessBanner] = useState(false);
 
   // Booking Form State
-  const [customerName, setCustomerName] = useState(currentUser?.name || 'Keerthana Rao');
-  const [customerPhone, setCustomerPhone] = useState(currentUser?.phone || '+91 98765 43210');
-  const [customerEmail, setCustomerEmail] = useState(currentUser?.email || 'keerthana@example.com');
+  const [customerName, setCustomerName] = useState(currentUser?.name || '');
+  const [customerPhone, setCustomerPhone] = useState(currentUser?.phone || '');
+  const [customerEmail, setCustomerEmail] = useState(currentUser?.email || '');
   const [jobTitle, setJobTitle] = useState('');
-  const [serviceAddress, setServiceAddress] = useState('Flat 402, Sai Residency, Benz Circle, Vijayawada');
-  const [workDate, setWorkDate] = useState(new Date().toISOString().split('T')[0]);
+  const [serviceAddress, setServiceAddress] = useState('Benz Circle, Vijayawada');
+  const [workDate, setWorkDate] = useState(() => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  });
+  const [timeSlot, setTimeSlot] = useState('morning');
   const [jobDescription, setJobDescription] = useState('');
+
+  // Fallback direct worker fetch in case workers list is still hydrating
+  const [worker, setWorker] = useState(() => workers.find(w => w.id === id) || workers[0] || null);
+
+  useEffect(() => {
+    const found = workers.find(w => w.id === id);
+    if (found) {
+      setWorker(found);
+    } else if (id && db) {
+      getDoc(doc(db, 'workerProfiles', id)).then(snap => {
+        if (snap.exists()) {
+          setWorker({ ...snap.data(), id: snap.id });
+        }
+      }).catch(() => {});
+    }
+  }, [id, workers]);
 
   useEffect(() => {
     if (currentUser?.name) setCustomerName(currentUser.name);
     if (currentUser?.phone) setCustomerPhone(currentUser.phone);
     if (currentUser?.email) setCustomerEmail(currentUser.email);
+    if (currentUser?.serviceArea) setServiceAddress(`${currentUser.serviceArea}, Andhra Pradesh`);
   }, [currentUser]);
-
-  const worker = workers.find(w => w.id === id) || workers[0];
 
   if (!worker) {
     return (
       <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
-        <h2>Worker profile not found</h2>
+        <h2 style={{ color: 'var(--color-navy)', marginBottom: '0.5rem' }}>Loading Worker Profile...</h2>
+        <p style={{ color: 'var(--color-text-muted)' }}>Retrieving artisan details from Andhra Pradesh Labour Network</p>
         <Link to="/search" className="btn btn-primary" style={{ marginTop: '1rem' }}>
           Back to Worker Search
         </Link>
@@ -60,11 +83,19 @@ export default function WorkerProfile() {
 
   const handleBookingSubmit = (e) => {
     e.preventDefault();
+    const formattedSlot = timeSlot === 'morning' 
+      ? 'Morning (8:00 AM – 12:00 PM)' 
+      : timeSlot === 'afternoon' 
+      ? 'Afternoon (12:00 PM – 4:00 PM)' 
+      : timeSlot === 'evening' 
+      ? 'Evening (4:00 PM – 8:00 PM)' 
+      : 'Flexible (Anytime)';
+
     createBooking({
       customerUid: currentUser?.uid || `cust-${Date.now().toString().slice(-4)}`,
-      customerName: customerName || currentUser?.name || "Customer",
-      customerPhone: customerPhone || "+91 98765 43210",
-      customerEmail: customerEmail || "customer@skillconnect.local",
+      customerName: customerName || currentUser?.name || "Citizen Customer",
+      customerPhone: customerPhone || currentUser?.phone || "+91 98765 43210",
+      customerEmail: customerEmail || currentUser?.email || "customer@skillconnect.ap",
       workerUid: worker.id,
       workerUserId: worker.userId || null,
       workerName: worker.name,
@@ -74,8 +105,9 @@ export default function WorkerProfile() {
       title: jobTitle,
       description: jobDescription,
       serviceAddress: serviceAddress,
-      serviceArea: worker.serviceArea,
-      requestedDate: workDate
+      serviceArea: worker.serviceArea || "Vijayawada",
+      requestedDate: workDate,
+      timeSlot: formattedSlot
     });
 
     setBookingModalOpen(false);
@@ -431,15 +463,32 @@ export default function WorkerProfile() {
                 />
               </div>
 
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label">{t('profile.workDate')} *</label>
-                <input
-                  type="date"
-                  required
-                  className="form-input"
-                  value={workDate}
-                  onChange={(e) => setWorkDate(e.target.value)}
-                />
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">{t('profile.workDate')} *</label>
+                  <input
+                    type="date"
+                    required
+                    min={new Date().toISOString().split('T')[0]}
+                    className="form-input"
+                    value={workDate}
+                    onChange={(e) => setWorkDate(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label">{lang === 'te' ? 'సమయ స్లాట్ షెడ్యూల్' : 'Schedule Time Slot'} *</label>
+                  <select
+                    className="form-select"
+                    value={timeSlot}
+                    onChange={(e) => setTimeSlot(e.target.value)}
+                  >
+                    <option value="morning">🌅 Morning (8 AM – 12 PM)</option>
+                    <option value="afternoon">☀️ Afternoon (12 PM – 4 PM)</option>
+                    <option value="evening">🌆 Evening (4 PM – 8 PM)</option>
+                    <option value="flexible">⚡ Flexible (Anytime)</option>
+                  </select>
+                </div>
               </div>
 
               <div className="form-group" style={{ marginBottom: 0 }}>

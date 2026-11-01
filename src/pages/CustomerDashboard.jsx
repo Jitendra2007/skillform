@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useData } from '../context/DataContext';
@@ -37,6 +38,13 @@ export default function CustomerDashboard() {
     submitProfileChangeRequest 
   } = useData();
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/');
+    }
+  }, [currentUser, navigate]);
 
   const [activeTab, setActiveTab] = useState('active'); // 'active' | 'history'
   const [reviewModalBooking, setReviewModalBooking] = useState(null);
@@ -141,7 +149,7 @@ export default function CustomerDashboard() {
               {t('dashboards.customer.title')}
             </h1>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>
-              {t('dashboards.customer.welcome')}, <strong>{currentUser?.name || "Keerthana Rao"}</strong> • Phone: <strong>{currentUser?.phone || "+91 98765 43210"}</strong> ({currentUser?.serviceArea || "Andhra Pradesh"})
+              {t('dashboards.customer.welcome')}, <strong>{currentUser?.name || (lang === 'te' ? 'కస్టమర్' : 'Citizen Customer')}</strong> • Phone: <strong>{currentUser?.phone || "+91 98765 43210"}</strong> ({currentUser?.serviceArea || "Andhra Pradesh"})
             </p>
           </div>
 
@@ -262,7 +270,7 @@ export default function CustomerDashboard() {
                         <span>•</span>
                         <span>{t('dashboards.customer.worker')}: <strong>{b.workerName}</strong> ({b.skillName})</span>
                         <span>•</span>
-                        <span>Requested for: <strong>{b.requestedDate}</strong></span>
+                        <span>Requested for: <strong>{b.requestedDate}</strong> {b.timeSlot && <span style={{ color: 'var(--color-primary-dark)', fontWeight: 600 }}>({b.timeSlot})</span>}</span>
                       </div>
                     </div>
                   </div>

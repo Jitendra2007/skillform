@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
@@ -32,6 +33,13 @@ export default function WorkerDashboard() {
     submitProfileChangeRequest 
   } = useData();
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/');
+    }
+  }, [currentUser, navigate]);
 
   const [activeTab, setActiveTab] = useState('requests'); // 'requests' | 'active' | 'completed'
   const [quoteModalBooking, setQuoteModalBooking] = useState(null);

@@ -20,8 +20,14 @@ export default function Navbar() {
   const { currentUser, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
 
   return (
     <header style={{
@@ -174,7 +180,7 @@ export default function Navbar() {
               </Link>
 
               <button
-                onClick={logout}
+                onClick={handleLogout}
                 className="btn btn-outline btn-sm"
                 title={t('nav.logout')}
                 style={{ padding: '0.4rem', color: 'var(--color-text-muted)', borderRadius: '8px' }}
@@ -255,27 +261,51 @@ export default function Navbar() {
             {lang === 'te' ? 'కార్మికుల నమోదు' : 'Join as Worker'}
           </Link>
           {currentUser ? (
-            <Link
-              to={
-                currentUser.role === 'customer'
-                  ? '/customer-dashboard'
+            <>
+              <Link
+                to={
+                  currentUser.role === 'customer'
+                    ? '/customer-dashboard'
+                    : currentUser.role === 'worker'
+                    ? '/worker-dashboard'
+                    : '/admin-dashboard'
+                }
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  padding: '0.6rem 0',
+                  fontWeight: 700,
+                  color: 'var(--color-primary-dark)'
+                }}
+              >
+                {currentUser.role === 'customer'
+                  ? t('nav.customerDashboard')
                   : currentUser.role === 'worker'
-                  ? '/worker-dashboard'
-                  : '/admin-dashboard'
-              }
-              onClick={() => setMobileMenuOpen(false)}
-              style={{
-                padding: '0.6rem 0',
-                fontWeight: 700,
-                color: 'var(--color-primary-dark)'
-              }}
-            >
-              {currentUser.role === 'customer'
-                ? t('nav.customerDashboard')
-                : currentUser.role === 'worker'
-                ? t('nav.workerDashboard')
-                : t('nav.adminDashboard')}
-            </Link>
+                  ? t('nav.workerDashboard')
+                  : t('nav.adminDashboard')}
+              </Link>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0.6rem 0',
+                  textAlign: 'left',
+                  fontWeight: 700,
+                  color: '#DC2626',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  fontSize: '0.92rem'
+                }}
+              >
+                <LogOut size={16} />
+                <span>{t('nav.logout')}</span>
+              </button>
+            </>
           ) : (
             <Link
               to="/login"
