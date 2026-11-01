@@ -308,7 +308,7 @@ input, select, textarea {
   background: linear-gradient(180deg, rgba(16, 33, 63, 0.1) 0%, rgba(16, 33, 63, 0.72) 100%);
   display: flex;
   flex-direction: column;
-  justifyContent: flex-end;
+  justify-content: flex-end;
   padding: 1.25rem 1.5rem;
   color: #FFFFFF;
 }
