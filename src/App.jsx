@@ -34,6 +34,7 @@ export default function App() {
                   <Route path="/register-worker" element={<WorkerRegistration />} />
                   <Route path="/customer-dashboard" element={<CustomerDashboard />} />
                   <Route path="/worker-dashboard" element={<WorkerDashboard />} />
+                  <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/admin-dashboard" element={<AdminDashboard />} />
                   <Route path="/login" element={<LoginSignup />} />
                   <Route path="/categories" element={<CategoriesPage />} />

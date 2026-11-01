@@ -13,7 +13,7 @@ export default function LoginSignup() {
   const [searchParams] = useSearchParams();
 
   const roleParam = searchParams.get('role');
-  const [role, setRole] = useState(roleParam === 'worker' ? 'worker' : roleParam === 'admin' ? 'admin' : 'customer');
+  const [role, setRole] = useState(roleParam === 'worker' ? 'worker' : 'customer');
   const [mode, setMode] = useState(searchParams.get('mode') === 'register' ? 'register' : 'login');
 
   const [identifier, setIdentifier] = useState('');
@@ -25,7 +25,6 @@ export default function LoginSignup() {
   // Sync role if query parameter changes
   useEffect(() => {
     if (roleParam === 'worker') setRole('worker');
-    else if (roleParam === 'admin') setRole('admin');
     else if (roleParam === 'customer') setRole('customer');
   }, [roleParam]);
 
@@ -33,22 +32,9 @@ export default function LoginSignup() {
     e.preventDefault();
     setErrorMsg('');
 
-    if (role === 'admin') {
-      const cleanPass = (password || '').trim();
-      const cleanId = (identifier || '').toLowerCase().trim();
-      if (
-        cleanPass.toUpperCase() === 'APADMIN@2026' ||
-        cleanPass === '9848' ||
-        cleanPass === 'admin123' ||
-        cleanId === 'admin@skillconnect.gov.in'
-      ) {
-        const res = loginWithCredentials(identifier || 'admin@skillconnect.gov.in', password, 'admin');
-        if (res.success) {
-          navigate('/admin-dashboard');
-          return;
-        }
-      }
-      setErrorMsg(lang === 'te' ? 'చెల్లని అడ్మిన్ పాస్‌వర్డ్ లేదా ఈమెయిల్. ప్రాప్యత నిరాకరించబడింది.' : 'Invalid Admin Passcode or Email. Unauthorized access restricted.');
+    // If an administrator enters their admin email here, redirect them to /admin
+    if (identifier.toLowerCase().trim() === 'admin@skillconnect.gov.in') {
+      navigate('/admin');
       return;
     }
 
@@ -60,7 +46,7 @@ export default function LoginSignup() {
       }
       if (res.role === 'customer') navigate('/customer-dashboard');
       else if (res.role === 'worker') navigate('/worker-dashboard');
-      else navigate('/admin-dashboard');
+      else navigate('/admin');
     } else {
       // Register mode for customer
       const newUser = registerUser({
@@ -74,7 +60,7 @@ export default function LoginSignup() {
 
       if (role === 'customer') navigate('/customer-dashboard');
       else if (role === 'worker') navigate('/worker-dashboard');
-      else navigate('/admin-dashboard');
+      else navigate('/customer-dashboard');
     }
   };
 
@@ -159,13 +145,13 @@ export default function LoginSignup() {
             </div>
           </div>
 
-          {/* 3 Role Selection Tabs (Customer | Worker | Admin) */}
+          {/* 2 Role Selection Tabs (Customer | Worker) — 50/50 clean split */}
           <div style={{
             backgroundColor: '#F1F5F9',
             borderRadius: '999px',
             padding: '4px',
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr 1fr',
+            gridTemplateColumns: '1fr 1fr',
             gap: '4px',
             marginBottom: '1.5rem'
           }}>
@@ -174,9 +160,9 @@ export default function LoginSignup() {
               onClick={() => { setRole('customer'); setMode('login'); setErrorMsg(''); }}
               style={{
                 border: 'none',
-                padding: '0.55rem',
+                padding: '0.6rem',
                 borderRadius: '999px',
-                fontSize: '0.86rem',
+                fontSize: '0.9rem',
                 fontWeight: role === 'customer' ? 700 : 500,
                 backgroundColor: role === 'customer' ? '#0F766E' : 'transparent',
                 color: role === 'customer' ? '#FFFFFF' : '#64748B',
@@ -191,9 +177,9 @@ export default function LoginSignup() {
               onClick={() => { setRole('worker'); setMode('login'); setErrorMsg(''); }}
               style={{
                 border: 'none',
-                padding: '0.55rem',
+                padding: '0.6rem',
                 borderRadius: '999px',
-                fontSize: '0.86rem',
+                fontSize: '0.9rem',
                 fontWeight: role === 'worker' ? 700 : 500,
                 backgroundColor: role === 'worker' ? '#0F766E' : 'transparent',
                 color: role === 'worker' ? '#FFFFFF' : '#64748B',
@@ -202,23 +188,6 @@ export default function LoginSignup() {
               }}
             >
               Worker
-            </button>
-            <button
-              type="button"
-              onClick={() => { setRole('admin'); setMode('login'); setErrorMsg(''); }}
-              style={{
-                border: 'none',
-                padding: '0.55rem',
-                borderRadius: '999px',
-                fontSize: '0.86rem',
-                fontWeight: role === 'admin' ? 700 : 500,
-                backgroundColor: role === 'admin' ? '#0F766E' : 'transparent',
-                color: role === 'admin' ? '#FFFFFF' : '#64748B',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              Admin
             </button>
           </div>
 
@@ -268,7 +237,7 @@ export default function LoginSignup() {
 
             <div>
               <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                {role === 'admin' ? 'Admin Official Email or ID *' : role === 'worker' ? 'Worker Mobile Number or Email *' : 'Mobile Number or Email *'}
+                {role === 'worker' ? 'Worker Mobile Number or Email *' : 'Mobile Number or Email *'}
               </label>
               <input
                 type="text"
@@ -276,9 +245,7 @@ export default function LoginSignup() {
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 placeholder={
-                  role === 'admin' 
-                    ? 'admin@skillconnect.gov.in' 
-                    : role === 'worker' 
+                  role === 'worker' 
                     ? 'Enter registered mobile (e.g. 9848915830)' 
                     : 'Enter mobile number or email'
                 }
@@ -296,9 +263,9 @@ export default function LoginSignup() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
                 <label style={{ fontSize: '0.84rem', fontWeight: 600, color: '#334155', margin: 0 }}>
-                  {role === 'admin' ? 'Security Passcode *' : 'Password *'}
+                  Password *
                 </label>
-                {role !== 'admin' && mode === 'login' && (
+                {mode === 'login' && (
                   <span
                     onClick={() => alert(lang === 'te' ? 'దయచేసి మీరు నమోదు చేసుకున్న పాస్‌వర్డ్‌ను ఉపయోగించండి.' : 'Please enter the password you chose during registration.')}
                     style={{ fontSize: '0.8rem', color: '#0F766E', fontWeight: 600, cursor: 'pointer' }}
@@ -312,7 +279,7 @@ export default function LoginSignup() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder={role === 'admin' ? 'Enter admin passcode' : 'Enter password'}
+                placeholder="Enter password"
                 style={{
                   width: '100%',
                   padding: '0.7rem 0.9rem',
@@ -345,38 +312,36 @@ export default function LoginSignup() {
             </button>
           </form>
 
-          {/* Register Link Switcher (Hidden for admin) */}
-          {role !== 'admin' && (
-            <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.86rem', color: '#64748B' }}>
-              {mode === 'login' ? (
-                <>
-                  Don't have an account?{' '}
-                  {role === 'worker' ? (
-                    <Link to="/register-worker" style={{ color: '#0F766E', fontWeight: 700, textDecoration: 'none' }}>
-                      Register
-                    </Link>
-                  ) : (
-                    <span
-                      onClick={() => setMode('register')}
-                      style={{ color: '#0F766E', fontWeight: 700, cursor: 'pointer' }}
-                    >
-                      Register
-                    </span>
-                  )}
-                </>
-              ) : (
-                <>
-                  Already have an account?{' '}
+          {/* Register Link Switcher */}
+          <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.86rem', color: '#64748B' }}>
+            {mode === 'login' ? (
+              <>
+                Don't have an account?{' '}
+                {role === 'worker' ? (
+                  <Link to="/register-worker" style={{ color: '#0F766E', fontWeight: 700, textDecoration: 'none' }}>
+                    Register
+                  </Link>
+                ) : (
                   <span
-                    onClick={() => setMode('login')}
+                    onClick={() => setMode('register')}
                     style={{ color: '#0F766E', fontWeight: 700, cursor: 'pointer' }}
                   >
-                    Login
+                    Register
                   </span>
-                </>
-              )}
-            </div>
-          )}
+                )}
+              </>
+            ) : (
+              <>
+                Already have an account?{' '}
+                <span
+                  onClick={() => setMode('login')}
+                  style={{ color: '#0F766E', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Login
+                </span>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
