@@ -14,61 +14,37 @@ export function DataProvider({ children }) {
   const [workers, setWorkers] = useState(initializeWorkers);
   const [bookings, setBookings] = useState(initializeBookings);
   const [verifications, setVerifications] = useState(initializeVerifications);
+  
   const [complaints, setComplaints] = useState(() => {
-    const saved = localStorage.getItem('skillconnect_complaints_v2');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
-    }
-    return [
-      {
-        id: "comp-1",
-        bookingId: "b-102",
-        customerName: "Keerthana Rao",
-        workerName: "Sravani Kumar",
-        subject: "Delay in arriving at scheduled slot",
-        details: "Worker requested a 1-hour delay due to traffic and previous site overrun.",
-        status: "under_review",
-        filedAt: "2026-10-21"
-      }
-    ];
+    try {
+      localStorage.removeItem('skillconnect_complaints_v2');
+      const saved = localStorage.getItem('skillconnect_complaints_v3');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [];
   });
 
   const [profileChangeRequests, setProfileChangeRequests] = useState(() => {
-    const saved = localStorage.getItem('skillconnect_change_requests_v1');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
-    }
-    return [
-      {
-        id: "pcr-101",
-        userId: "cust-demo-1",
-        userName: "Keerthana Rao",
-        userRole: "customer",
-        field: "Phone Number",
-        fieldKey: "phone",
-        currentVal: "+91 98765 43210",
-        requestedVal: "+91 91234 56789",
-        reason: "Ported to a new official Jio corporate connection in Vijayawada.",
-        status: "pending",
-        submittedAt: "2026-10-21",
-        adminRemarks: ""
-      },
-      {
-        id: "pcr-102",
-        userId: "61750a2a-c9ff-56e2-87f2-ab5fca4a64d2",
-        userName: "Aarav Reddy",
-        userRole: "worker",
-        field: "Indicative Daily Wage",
-        fieldKey: "indicativeWage",
-        currentVal: "₹850 / day",
-        requestedVal: "₹950 / day",
-        reason: "Acquired advanced structural masonry certification and tile levelling tools.",
-        status: "pending",
-        submittedAt: "2026-10-21",
-        adminRemarks: ""
-      }
-    ];
+    try {
+      localStorage.removeItem('skillconnect_change_requests_v1');
+      const saved = localStorage.getItem('skillconnect_change_requests_v2');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [];
   });
+
+  // Clear legacy mock data once on mount
+  useEffect(() => {
+    try {
+      localStorage.removeItem('skillconnect_workers_v3');
+      localStorage.removeItem('skillconnect_workers_v2');
+      localStorage.removeItem('skillconnect_bookings_v2');
+      localStorage.removeItem('skillconnect_bookings_v1');
+      localStorage.removeItem('skillconnect_verifications_v2');
+      localStorage.removeItem('skillconnect_complaints_v2');
+      localStorage.removeItem('skillconnect_change_requests_v1');
+    } catch (e) {}
+  }, []);
 
   // Real-time Firestore Cloud Listener for Workers, Bookings, Verifications & Profile Change Requests
   useEffect(() => {
@@ -79,14 +55,9 @@ export function DataProvider({ children }) {
           const cloudWorkers = snapshot.docs
             .map(d => ({ ...d.data(), id: d.id }))
             .filter(cw => cw && cw.name && !cw.name.includes('Cloud Firestore') && cw.skills && cw.skills.length > 0);
-          
-          if (cloudWorkers.length > 0) {
-            setWorkers(prev => {
-              const cloudIds = new Set(cloudWorkers.map(cw => cw.id));
-              const localOnly = prev.filter(w => !cloudIds.has(w.id));
-              return [...cloudWorkers, ...localOnly];
-            });
-          }
+          setWorkers(cloudWorkers);
+        } else {
+          setWorkers([]);
         }
       }, (err) => {
         console.info("Firestore workers sync notice:", err.message);
@@ -95,11 +66,9 @@ export function DataProvider({ children }) {
       const unsubBookings = onSnapshot(collection(db, 'bookings'), (snapshot) => {
         if (!snapshot.empty) {
           const cloudBookings = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
-          setBookings(prev => {
-            const cloudIds = new Set(cloudBookings.map(cb => cb.id));
-            const localOnly = prev.filter(b => !cloudIds.has(b.id));
-            return [...cloudBookings, ...localOnly];
-          });
+          setBookings(cloudBookings);
+        } else {
+          setBookings([]);
         }
       }, (err) => {
         console.info("Firestore bookings sync notice:", err.message);
@@ -108,11 +77,7 @@ export function DataProvider({ children }) {
       const unsubVerifications = onSnapshot(collection(db, 'verificationSubmissions'), (snapshot) => {
         if (!snapshot.empty) {
           const cloudVerifs = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
-          setVerifications(prev => {
-            const cloudIds = new Set(cloudVerifs.map(cv => cv.id));
-            const localOnly = prev.filter(v => !cloudIds.has(v.id));
-            return [...cloudVerifs, ...localOnly];
-          });
+          setVerifications(cloudVerifs);
 
           // Sync verified status to workers state if any cloud verification is approved
           const approvedWorkerIds = new Set(cloudVerifs.filter(cv => cv.status === 'approved').map(cv => cv.workerId));
@@ -130,6 +95,8 @@ export function DataProvider({ children }) {
               return w;
             }));
           }
+        } else {
+          setVerifications([]);
         }
       }, (err) => {
         console.info("Firestore verifications listener notice:", err.message);
@@ -138,11 +105,9 @@ export function DataProvider({ children }) {
       const unsubChangeRequests = onSnapshot(collection(db, 'profileChangeRequests'), (snapshot) => {
         if (!snapshot.empty) {
           const cloudRequests = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
-          setProfileChangeRequests(prev => {
-            const cloudIds = new Set(cloudRequests.map(cr => cr.id));
-            const localOnly = prev.filter(r => !cloudIds.has(r.id));
-            return [...cloudRequests, ...localOnly];
-          });
+          setProfileChangeRequests(cloudRequests);
+        } else {
+          setProfileChangeRequests([]);
         }
       }, (err) => {
         console.info("Firestore change requests listener info:", err.message);
@@ -161,23 +126,23 @@ export function DataProvider({ children }) {
 
   // Sync to local storage
   useEffect(() => {
-    localStorage.setItem('skillconnect_workers_v3', JSON.stringify(workers));
+    localStorage.setItem('skillconnect_workers_v4', JSON.stringify(workers));
   }, [workers]);
 
   useEffect(() => {
-    localStorage.setItem('skillconnect_bookings_v2', JSON.stringify(bookings));
+    localStorage.setItem('skillconnect_bookings_v3', JSON.stringify(bookings));
   }, [bookings]);
 
   useEffect(() => {
-    localStorage.setItem('skillconnect_verifications_v2', JSON.stringify(verifications));
+    localStorage.setItem('skillconnect_verifications_v3', JSON.stringify(verifications));
   }, [verifications]);
 
   useEffect(() => {
-    localStorage.setItem('skillconnect_complaints_v2', JSON.stringify(complaints));
+    localStorage.setItem('skillconnect_complaints_v3', JSON.stringify(complaints));
   }, [complaints]);
 
   useEffect(() => {
-    localStorage.setItem('skillconnect_change_requests_v1', JSON.stringify(profileChangeRequests));
+    localStorage.setItem('skillconnect_change_requests_v2', JSON.stringify(profileChangeRequests));
   }, [profileChangeRequests]);
 
   // Actions
@@ -202,20 +167,23 @@ export function DataProvider({ children }) {
   };
 
   const approveProfileChangeRequest = async (reqId) => {
-    let approvedReq = null;
-    setProfileChangeRequests(prev => prev.map(r => {
-      if (r.id === reqId) {
-        approvedReq = { ...r, status: 'approved', adminRemarks: 'Approved by AP State Admin.' };
-        return approvedReq;
-      }
-      return r;
-    }));
+    const target = profileChangeRequests.find(r => r.id === reqId);
+    if (target) {
+      setProfileChangeRequests(prev => prev.map(r => {
+        if (r.id === reqId) {
+          return { ...r, status: 'approved', adminRemarks: 'Approved by AP State Admin.' };
+        }
+        return r;
+      }));
 
-    if (approvedReq) {
-      if (approvedReq.userRole === 'worker') {
+      if (target.userRole === 'worker' && target.fieldKey) {
         setWorkers(prev => prev.map(w => {
-          if (w.id === approvedReq.userId || w.name === approvedReq.userName) {
-            const updated = { ...w, [approvedReq.fieldKey]: approvedReq.requestedVal };
+          if (w.id === target.userId || w.name === target.userName) {
+            let cleanVal = target.requestedVal;
+            if (target.fieldKey === 'indicativeWage') {
+              cleanVal = parseInt(target.requestedVal.replace(/\D/g, ''), 10) || w.indicativeWage;
+            }
+            const updated = { ...w, [target.fieldKey]: cleanVal };
             if (db) {
               setDoc(doc(db, 'workerProfiles', w.id), updated, { merge: true }).catch(() => {});
             }
@@ -264,17 +232,8 @@ export function DataProvider({ children }) {
       ...bookingData
     };
 
-    // Immediate state update
     setBookings(prev => [newBooking, ...prev]);
 
-    // Immediate localStorage persist
-    try {
-      const stored = JSON.parse(localStorage.getItem('skillconnect_bookings_v2') || '[]');
-      const updated = [newBooking, ...stored.filter(b => b.id !== bookingId)];
-      localStorage.setItem('skillconnect_bookings_v2', JSON.stringify(updated));
-    } catch (e) {}
-
-    // Cloud Firestore Sync
     try {
       if (db) {
         await setDoc(doc(db, 'bookings', bookingId), newBooking);
@@ -286,27 +245,25 @@ export function DataProvider({ children }) {
     return newBooking;
   };
 
-  const submitQuotation = async (bookingId, quoteDetails) => {
-    let updatedBooking = null;
+  const submitQuotation = async (bookingId, quoteData) => {
+    const quotation = {
+      id: `q-${Date.now().toString().slice(-4)}`,
+      amountINR: quoteData.amountINR,
+      estimatedTime: quoteData.estimatedTime,
+      notes: quoteData.notes,
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+
     setBookings(prev => prev.map(b => {
       if (b.id === bookingId) {
-        updatedBooking = {
-          ...b,
-          status: 'quoted',
-          quotation: {
-            id: `q-${Date.now().toString().slice(-4)}`,
-            createdAt: new Date().toISOString().split('T')[0],
-            ...quoteDetails
-          }
-        };
-        return updatedBooking;
+        return { ...b, status: 'quoted', quotation };
       }
       return b;
     }));
 
-    if (updatedBooking && db) {
+    if (db) {
       try {
-        await setDoc(doc(db, 'bookings', bookingId), updatedBooking, { merge: true });
+        await setDoc(doc(db, 'bookings', bookingId), { status: 'quoted', quotation }, { merge: true });
       } catch (e) {}
     }
   };
@@ -329,29 +286,29 @@ export function DataProvider({ children }) {
   const declineQuotation = async (bookingId) => {
     setBookings(prev => prev.map(b => {
       if (b.id === bookingId) {
-        return { ...b, status: 'cancelled' };
+        return { ...b, status: 'quote_declined' };
       }
       return b;
     }));
 
     if (db) {
       try {
-        await setDoc(doc(db, 'bookings', bookingId), { status: 'cancelled' }, { merge: true });
+        await setDoc(doc(db, 'bookings', bookingId), { status: 'quote_declined' }, { merge: true });
       } catch (e) {}
     }
   };
 
-  const updateJobStatus = async (bookingId, status) => {
+  const updateJobStatus = async (bookingId, newStatus) => {
     setBookings(prev => prev.map(b => {
       if (b.id === bookingId) {
-        return { ...b, status };
+        return { ...b, status: newStatus };
       }
       return b;
     }));
 
     if (db) {
       try {
-        await setDoc(doc(db, 'bookings', bookingId), { status }, { merge: true });
+        await setDoc(doc(db, 'bookings', bookingId), { status: newStatus }, { merge: true });
       } catch (e) {}
     }
   };
@@ -386,7 +343,6 @@ export function DataProvider({ children }) {
       return v;
     }));
 
-    // Update workers array matching by ID, Name or Phone
     setWorkers(prev => prev.map(w => {
       const isMatch = (targetWorkerId && w.id === targetWorkerId) ||
         (targetWorkerName && w.name && w.name.toLowerCase().trim() === targetWorkerName.toLowerCase().trim()) ||
@@ -398,21 +354,19 @@ export function DataProvider({ children }) {
       return w;
     }));
 
-    // Update current user if matching
     try {
-      const cur = JSON.parse(localStorage.getItem('skillconnect_current_user') || 'null');
+      const cur = JSON.parse(localStorage.getItem('skillconnect_current_user_v2') || 'null');
       if (cur) {
         const matchesCur = (targetWorkerId && (cur.workerId === targetWorkerId || cur.uid === targetWorkerId)) ||
           (targetWorkerName && cur.name && cur.name.toLowerCase().trim() === targetWorkerName.toLowerCase().trim()) ||
           (targetWorkerPhone && cleanPhone(cur.phone || cur.name) === cleanPhone(targetWorkerPhone));
         if (matchesCur) {
           cur.verificationStatus = 'verified';
-          localStorage.setItem('skillconnect_current_user', JSON.stringify(cur));
+          localStorage.setItem('skillconnect_current_user_v2', JSON.stringify(cur));
         }
       }
     } catch (e) {}
 
-    // Immediate Firestore Cloud Sync for both workerProfiles and verificationSubmissions
     try {
       if (db) {
         await setDoc(doc(db, 'verificationSubmissions', verifId), { status: 'approved' }, { merge: true });
@@ -426,47 +380,32 @@ export function DataProvider({ children }) {
   };
 
   const rejectVerification = async (verifId, notes) => {
-    let targetWorkerId = null;
     setVerifications(prev => prev.map(v => {
       if (v.id === verifId) {
-        targetWorkerId = v.workerId;
-        return { ...v, status: 'rejected', notes: notes || v.notes };
+        return { ...v, status: 'rejected', notes: notes || 'Rejected by AP State Admin.' };
       }
       return v;
     }));
 
-    if (targetWorkerId) {
-      setWorkers(prev => prev.map(w => {
-        if (w.id === targetWorkerId) {
-          return { ...w, verificationStatus: 'rejected' };
-        }
-        return w;
-      }));
-
-      try {
-        if (db) {
-          await setDoc(doc(db, 'verificationSubmissions', verifId), { status: 'rejected', notes: notes || '' }, { merge: true });
-          await setDoc(doc(db, 'workerProfiles', targetWorkerId), { verificationStatus: 'rejected' }, { merge: true });
-        }
-      } catch (err) {
-        console.warn("Firestore verification rejection sync notice:", err.message);
+    try {
+      if (db) {
+        await setDoc(doc(db, 'verificationSubmissions', verifId), { status: 'rejected', notes: notes || 'Rejected by AP State Admin.' }, { merge: true });
       }
-    }
+    } catch (e) {}
   };
 
   const registerWorker = async (newWorker) => {
-    const workerId = `w-${Date.now().toString().slice(-4)}`;
-    const gender = newWorker.gender || 'male';
-    const avatar = newWorker.avatar || getAvatarForGender(gender, Date.now());
+    const workerId = `w-${Date.now().toString().slice(-6)}`;
+    const avatar = newWorker.avatar || getAvatarForGender(newWorker.gender || 'male', workers.length);
 
     const fullWorker = {
       id: workerId,
-      userId: newWorker.userId || `u-${Date.now().toString().slice(-4)}`,
+      userId: workerId,
       name: newWorker.fullName,
-      gender: gender,
+      gender: newWorker.gender || "male",
       phone: newWorker.phone,
-      email: newWorker.email || `${newWorker.fullName.toLowerCase().replace(/\s+/g, '')}@skillconnect.test`,
-      bio: newWorker.bio,
+      email: newWorker.email || `${newWorker.fullName.toLowerCase().replace(/\s+/g, '')}@skillconnect.ap`,
+      bio: newWorker.bio || `Certified local professional providing high quality reliable services in ${newWorker.serviceArea || 'Vijayawada'}.`,
       experienceYears: (newWorker.experienceYears !== undefined && newWorker.experienceYears !== '') ? parseInt(newWorker.experienceYears, 10) : 0,
       serviceArea: newWorker.serviceArea || "Vijayawada",
       availability: "available",
@@ -480,7 +419,6 @@ export function DataProvider({ children }) {
 
     setWorkers(prev => [fullWorker, ...prev]);
 
-    // Create verification submission
     const newVerif = {
       id: `verif-${Date.now().toString().slice(-4)}`,
       workerId: workerId,
@@ -496,7 +434,6 @@ export function DataProvider({ children }) {
     };
     setVerifications(prev => [newVerif, ...prev]);
 
-    // Save to Firestore (graceful cloud sync)
     try {
       if (db) {
         await setDoc(doc(db, 'workerProfiles', workerId), {
@@ -509,7 +446,7 @@ export function DataProvider({ children }) {
         });
       }
     } catch (err) {
-      console.warn("Firestore cloud sync notice (saved locally in persistent storage):", err.message);
+      console.warn("Firestore cloud sync notice:", err.message);
     }
 
     return fullWorker;

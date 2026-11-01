@@ -5,26 +5,6 @@ import { onAuthStateChanged, signOut as fbSignOut } from 'firebase/auth';
 const AuthContext = createContext();
 
 export const DEMO_USERS = {
-  customer: {
-    uid: "cust-demo-1",
-    name: "Keerthana Rao",
-    email: "keerthana@example.com",
-    password: "password123",
-    role: "customer",
-    serviceArea: "Vijayawada",
-    phone: "+91 98765 43210"
-  },
-  worker: {
-    uid: "61750a2a-c9ff-56e2-87f2-ab5fca4a64d2",
-    name: "Aarav Reddy",
-    email: "aarav.masonry@example.com",
-    password: "password123",
-    role: "worker",
-    serviceArea: "Vijayawada",
-    phone: "+91 90000 00001",
-    trade: "Masonry & Civil Works",
-    verificationStatus: "verified"
-  },
   admin: {
     uid: "admin-master-001",
     name: "Andhra Pradesh State Admin",
@@ -38,58 +18,35 @@ export const DEMO_USERS = {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(() => {
-    const saved = localStorage.getItem('skillconnect_current_user');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
-      }
-    }
+    try {
+      const saved = localStorage.getItem('skillconnect_current_user_v2');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
     return null;
   });
 
   const [registeredUsers, setRegisteredUsers] = useState(() => {
-    const saved = localStorage.getItem('skillconnect_registered_users');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {}
-    }
-    return [
-      {
-        uid: "cust-demo-1",
-        name: "Keerthana Rao",
-        email: "keerthana@example.com",
-        password: "password123",
-        role: "customer",
-        phone: "+91 98765 43210",
-        serviceArea: "Vijayawada"
-      },
-      {
-        uid: "61750a2a-c9ff-56e2-87f2-ab5fca4a64d2",
-        name: "Aarav Reddy",
-        email: "aarav.masonry@example.com",
-        password: "password123",
-        role: "worker",
-        phone: "+91 90000 00001",
-        serviceArea: "Vijayawada"
-      }
-    ];
+    try {
+      localStorage.removeItem('skillconnect_registered_users');
+      localStorage.removeItem('skillconnect_current_user');
+      const saved = localStorage.getItem('skillconnect_registered_users_v2');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [];
   });
 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (currentUser) {
-      localStorage.setItem('skillconnect_current_user', JSON.stringify(currentUser));
+      localStorage.setItem('skillconnect_current_user_v2', JSON.stringify(currentUser));
     } else {
-      localStorage.removeItem('skillconnect_current_user');
+      localStorage.removeItem('skillconnect_current_user_v2');
     }
   }, [currentUser]);
 
   useEffect(() => {
-    localStorage.setItem('skillconnect_registered_users', JSON.stringify(registeredUsers));
+    localStorage.setItem('skillconnect_registered_users_v2', JSON.stringify(registeredUsers));
   }, [registeredUsers]);
 
   // Optional Firebase Auth listener
@@ -116,31 +73,30 @@ export function AuthProvider({ children }) {
   });
 
   const loginAs = (role) => {
-    let user = DEMO_USERS[role] || DEMO_USERS.customer;
-    if (role === 'worker') {
-      try {
-        const storedWorkers = JSON.parse(localStorage.getItem('skillconnect_workers_v3') || '[]');
-        if (storedWorkers.length > 0) {
-          const latestWorker = storedWorkers[0];
-          user = {
-            ...user,
-            workerId: latestWorker.id,
-            uid: latestWorker.userId || latestWorker.id,
-            name: latestWorker.name,
-            phone: latestWorker.phone,
-            serviceArea: latestWorker.serviceArea,
-            verificationStatus: latestWorker.verificationStatus,
-            avatar: latestWorker.avatar
-          };
-        }
-      } catch (e) {}
-    }
     if (role === 'admin') {
       setIsAdminUnlocked(true);
       try { sessionStorage.setItem('skillconnect_admin_unlocked', 'true'); } catch (e) {}
+      setCurrentUser(DEMO_USERS.admin);
+      return DEMO_USERS.admin;
     }
-    setCurrentUser(user);
-    return user;
+
+    // Default to the first registered user with this role, or a fresh blank persona
+    const found = registeredUsers.find(u => u.role === role);
+    if (found) {
+      setCurrentUser(found);
+      return found;
+    }
+
+    const blankUser = {
+      uid: `u-${Date.now().toString().slice(-6)}`,
+      name: role === 'worker' ? 'Registered Worker' : 'Citizen Customer',
+      email: `${role}@skillconnect.ap`,
+      role: role,
+      serviceArea: 'Vijayawada',
+      phone: '+91 98765 43210'
+    };
+    setCurrentUser(blankUser);
+    return blankUser;
   };
 
   const registerUser = (userData) => {
@@ -157,7 +113,7 @@ export function AuthProvider({ children }) {
     setRegisteredUsers(prev => {
       const filtered = prev.filter(u => u.email !== newUser.email);
       const updated = [newUser, ...filtered];
-      localStorage.setItem('skillconnect_registered_users', JSON.stringify(updated));
+      localStorage.setItem('skillconnect_registered_users_v2', JSON.stringify(updated));
       return updated;
     });
 
@@ -190,38 +146,23 @@ export function AuthProvider({ children }) {
     );
     if (foundRegistered) {
       if (cleanPass && foundRegistered.password && foundRegistered.password !== cleanPass) {
-        return { success: false, message: 'Incorrect password for this registered email.' };
+        return { success: false, message: 'Incorrect password for this registered account.' };
       }
       setCurrentUser(foundRegistered);
       return { success: true, role: foundRegistered.role, user: foundRegistered };
     }
 
-    // 3. Check demo customer
-    if (cleanEmail === 'keerthana@example.com' || cleanEmail.includes('keerthana')) {
-      const cust = { ...DEMO_USERS.customer, email: cleanEmail };
-      setCurrentUser(cust);
-      return { success: true, role: 'customer', user: cust };
-    }
-
-    // 4. Check demo worker
-    if (cleanEmail === 'aarav.masonry@example.com' || cleanEmail.includes('aarav')) {
-      const wrk = { ...DEMO_USERS.worker, email: cleanEmail };
-      setCurrentUser(wrk);
-      return { success: true, role: 'worker', user: wrk };
-    }
-
-    // 5. Default login by role (Flexible demo credentials)
+    // 3. Newly created login dynamically registers if not existing
     const fallbackUser = {
       uid: `u-${Date.now().toString().slice(-6)}`,
       name: cleanEmail ? cleanEmail.split('@')[0].replace('.', ' ') : (roleHint === 'worker' ? 'Skilled Worker' : 'Citizen Customer'),
-      email: cleanEmail || `${roleHint}@skillconnect.ap`,
+      email: cleanEmail.includes('@') ? cleanEmail : `${cleanEmail}@skillconnect.ap`,
       password: cleanPass || 'password123',
       role: roleHint,
-      phone: "+91 98765 43210",
+      phone: cleanDigits(cleanEmail) ? cleanEmail : "+91 98765 43210",
       serviceArea: "Vijayawada"
     };
 
-    // Save newly entered account so it persists
     setRegisteredUsers(prev => [fallbackUser, ...prev.filter(u => u.email !== fallbackUser.email)]);
     setCurrentUser(fallbackUser);
     return { success: true, role: roleHint, user: fallbackUser };
@@ -241,7 +182,7 @@ export function AuthProvider({ children }) {
       try {
         sessionStorage.setItem('skillconnect_admin_unlocked', 'true');
       } catch (e) {}
-      loginAs('admin');
+      setCurrentUser(DEMO_USERS.admin);
       return { success: true };
     }
     return { 
@@ -255,7 +196,7 @@ export function AuthProvider({ children }) {
     try {
       sessionStorage.removeItem('skillconnect_admin_unlocked');
     } catch (e) {}
-    loginAs('customer');
+    setCurrentUser(null);
   };
 
   return (

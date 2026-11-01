@@ -551,11 +551,26 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid-3">
-            {topWorkers.map((worker) => (
-              <WorkerCard key={worker.id} worker={worker} />
-            ))}
-          </div>
+          {topWorkers.length > 0 ? (
+            <div className="grid-3">
+              {topWorkers.map((worker) => (
+                <WorkerCard key={worker.id} worker={worker} />
+              ))}
+            </div>
+          ) : (
+            <div className="card" style={{ textAlign: 'center', padding: '2.5rem 1.5rem', backgroundColor: '#FFFFFF', borderRadius: '16px' }}>
+              <div style={{ fontSize: '2.2rem', marginBottom: '0.5rem' }}>👷‍♂️</div>
+              <h3 style={{ fontSize: '1.2rem', color: 'var(--color-navy)', marginBottom: '0.35rem', fontWeight: 700 }}>
+                {lang === 'te' ? 'ఇంకా కార్మికులు నమోదు కాలేదు' : 'No Workers Registered Yet'}
+              </h3>
+              <p style={{ color: 'var(--color-text-muted)', fontSize: '0.88rem', maxWidth: '440px', margin: '0 auto 1.25rem auto' }}>
+                {lang === 'te' ? 'మీరు మొదటి కార్మికుడిగా నమోదు చేసుకోవచ్చు లేదా కొత్త ప్రొఫైల్ సృష్టించవచ్చు.' : 'Ready for fresh worker registrations! Register to start receiving direct customer calls and booking requests.'}
+              </p>
+              <Link to="/register-worker" className="btn btn-primary btn-sm" style={{ padding: '0.5rem 1.25rem' }}>
+                {lang === 'te' ? 'కార్మికునిగా చేరండి' : 'Register First Worker'}
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
