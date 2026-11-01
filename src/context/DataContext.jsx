@@ -55,9 +55,12 @@ export function DataProvider({ children }) {
           const cloudWorkers = snapshot.docs
             .map(d => ({ ...d.data(), id: d.id }))
             .filter(cw => cw && cw.name && !cw.name.includes('Cloud Firestore') && cw.skills && cw.skills.length > 0);
-          setWorkers(cloudWorkers);
-        } else {
-          setWorkers([]);
+          setWorkers(prev => {
+            const cloudIds = new Set(cloudWorkers.map(cw => cw.id));
+            const cloudPhones = new Set(cloudWorkers.map(cw => cleanPhone(cw.phone)).filter(Boolean));
+            const unSynced = prev.filter(pw => !cloudIds.has(pw.id) && !cloudPhones.has(cleanPhone(pw.phone)));
+            return [...cloudWorkers, ...unSynced];
+          });
         }
       }, (err) => {
         console.info("Firestore workers sync notice:", err.message);
@@ -67,8 +70,6 @@ export function DataProvider({ children }) {
         if (!snapshot.empty) {
           const cloudBookings = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
           setBookings(cloudBookings);
-        } else {
-          setBookings([]);
         }
       }, (err) => {
         console.info("Firestore bookings sync notice:", err.message);
@@ -77,7 +78,12 @@ export function DataProvider({ children }) {
       const unsubVerifications = onSnapshot(collection(db, 'verificationSubmissions'), (snapshot) => {
         if (!snapshot.empty) {
           const cloudVerifs = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
-          setVerifications(cloudVerifs);
+          setVerifications(prev => {
+            const cloudIds = new Set(cloudVerifs.map(cv => cv.id));
+            const cloudPhones = new Set(cloudVerifs.map(cv => cleanPhone(cv.workerPhone)).filter(Boolean));
+            const unSynced = prev.filter(pv => !cloudIds.has(pv.id) && !cloudPhones.has(cleanPhone(pv.workerPhone)));
+            return [...cloudVerifs, ...unSynced];
+          });
 
           // Sync verified status to workers state if any cloud verification is approved
           const approvedWorkerIds = new Set(cloudVerifs.filter(cv => cv.status === 'approved').map(cv => cv.workerId));
@@ -95,8 +101,6 @@ export function DataProvider({ children }) {
               return w;
             }));
           }
-        } else {
-          setVerifications([]);
         }
       }, (err) => {
         console.info("Firestore verifications listener notice:", err.message);
@@ -417,7 +421,14 @@ export function DataProvider({ children }) {
       avatar: avatar
     };
 
-    setWorkers(prev => [fullWorker, ...prev]);
+    setWorkers(prev => {
+      const filtered = prev.filter(w => w.id !== fullWorker.id && cleanPhone(w.phone) !== cleanPhone(fullWorker.phone));
+      const updated = [fullWorker, ...filtered];
+      try {
+        localStorage.setItem('skillconnect_workers_v4', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
 
     const newVerif = {
       id: `verif-${Date.now().toString().slice(-4)}`,
@@ -432,7 +443,15 @@ export function DataProvider({ children }) {
       filePreview: avatar,
       notes: "Newly submitted registration document."
     };
-    setVerifications(prev => [newVerif, ...prev]);
+
+    setVerifications(prev => {
+      const filtered = prev.filter(v => v.id !== newVerif.id && cleanPhone(v.workerPhone) !== cleanPhone(newVerif.workerPhone));
+      const updated = [newVerif, ...filtered];
+      try {
+        localStorage.setItem('skillconnect_verifications_v3', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
 
     try {
       if (db) {
@@ -442,6 +461,18 @@ export function DataProvider({ children }) {
         });
         await setDoc(doc(db, 'verificationSubmissions', newVerif.id), {
           ...newVerif,
+          createdAt: new Date().toISOString()
+        });
+        await setDoc(doc(db, 'users', workerId), {
+          uid: workerId,
+          workerId: workerId,
+          name: fullWorker.name,
+          phone: fullWorker.phone,
+          email: fullWorker.email,
+          role: 'worker',
+          serviceArea: fullWorker.serviceArea,
+          verificationStatus: 'pending',
+          avatar: avatar,
           createdAt: new Date().toISOString()
         });
       }

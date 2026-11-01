@@ -153,7 +153,7 @@ export default function LoginSignup() {
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: '4px',
-            marginBottom: '1.5rem'
+            marginBottom: '0.75rem'
           }}>
             <button
               type="button"
@@ -170,7 +170,7 @@ export default function LoginSignup() {
                 transition: 'all 0.15s ease'
               }}
             >
-              Customer
+              👤 Customer
             </button>
             <button
               type="button"
@@ -187,8 +187,24 @@ export default function LoginSignup() {
                 transition: 'all 0.15s ease'
               }}
             >
-              Worker
+              👷 Worker
             </button>
+          </div>
+
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '1.25rem',
+            fontSize: '0.8rem',
+            color: '#0F766E',
+            fontWeight: 700,
+            backgroundColor: '#F0FDF4',
+            padding: '0.35rem 0.75rem',
+            borderRadius: '6px',
+            border: '1px solid #BBF7D0'
+          }}>
+            {role === 'worker' 
+              ? '🔨 Logging in as Skilled Worker → Worker Dashboard' 
+              : '🛒 Logging in as Citizen Customer → Customer Dashboard'}
           </div>
 
           {/* Error notice */}
@@ -237,7 +253,7 @@ export default function LoginSignup() {
 
             <div>
               <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                {role === 'worker' ? 'Worker Mobile Number or Email *' : 'Mobile Number or Email *'}
+                {role === 'worker' ? 'Worker Mobile Number or Email *' : 'Customer Mobile Number or Email *'}
               </label>
               <input
                 type="text"
@@ -246,8 +262,8 @@ export default function LoginSignup() {
                 onChange={(e) => setIdentifier(e.target.value)}
                 placeholder={
                   role === 'worker' 
-                    ? 'Enter registered mobile (e.g. 9848915830)' 
-                    : 'Enter mobile number or email'
+                    ? 'Enter registered worker mobile (e.g. 7993960989)' 
+                    : 'Enter customer mobile number or email'
                 }
                 style={{
                   width: '100%',

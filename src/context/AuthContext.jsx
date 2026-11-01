@@ -82,18 +82,27 @@ export function AuthProvider({ children }) {
   };
 
   const registerUser = (userData) => {
+    const cleanDigits = (v) => (v || '').toString().replace(/\D/g, '');
+    const userRole = userData.role || "customer";
     const newUser = {
-      uid: `u-${Date.now().toString().slice(-6)}`,
-      name: userData.name || "Customer User",
+      uid: userData.uid || (userRole === 'worker' ? `w-${Date.now().toString().slice(-6)}` : `u-${Date.now().toString().slice(-6)}`),
+      workerId: userData.workerId || (userRole === 'worker' ? (userData.uid || userData.workerId) : undefined),
+      name: userData.name || (userRole === 'worker' ? "Skilled Worker" : "Customer User"),
       phone: userData.phone || "+91 98765 43210",
       email: (userData.email || "").toLowerCase().trim(),
       password: userData.password || "password123",
-      role: userData.role || "customer",
-      serviceArea: userData.serviceArea || "Vijayawada"
+      role: userRole,
+      serviceArea: userData.serviceArea || "Vijayawada",
+      verificationStatus: userData.verificationStatus || (userRole === 'worker' ? 'pending' : undefined),
+      avatar: userData.avatar
     };
 
     setRegisteredUsers(prev => {
-      const filtered = prev.filter(u => u.email !== newUser.email);
+      const filtered = prev.filter(u => {
+        if (newUser.email && u.email === newUser.email) return false;
+        if (cleanDigits(newUser.phone) && cleanDigits(u.phone) === cleanDigits(newUser.phone)) return false;
+        return true;
+      });
       const updated = [newUser, ...filtered];
       localStorage.setItem('skillconnect_registered_users_v2', JSON.stringify(updated));
       return updated;
@@ -106,6 +115,8 @@ export function AuthProvider({ children }) {
   const loginWithCredentials = (email, password, roleHint = 'customer') => {
     const cleanEmail = (email || '').toLowerCase().trim();
     const cleanPass = (password || '').trim();
+    const cleanDigits = (v) => (v || '').toString().replace(/\D/g, '');
+    const inputDigits = cleanDigits(cleanEmail);
 
     // 1. Check Admin
     if (
@@ -118,36 +129,96 @@ export function AuthProvider({ children }) {
       return { success: true, role: 'admin', user: DEMO_USERS.admin };
     }
 
-    // 2. Check registered accounts
-    const cleanDigits = (v) => (v || '').toString().replace(/\D/g, '');
+    // 2. Check saved workers from localStorage
+    let savedWorkers = [];
+    try {
+      savedWorkers = JSON.parse(localStorage.getItem('skillconnect_workers_v4') || '[]');
+    } catch (e) {}
+
+    const matchedWorker = savedWorkers.find(w => 
+      (inputDigits && cleanDigits(w.phone) === inputDigits) ||
+      (w.email && w.email.toLowerCase().trim() === cleanEmail) ||
+      (w.name && w.name.toLowerCase().trim() === cleanEmail)
+    );
+
+    // 3. Check registered users list
     const foundRegistered = registeredUsers.find(u => 
-      u.email === cleanEmail ||
-      (cleanDigits(cleanEmail) && cleanDigits(u.phone) === cleanDigits(cleanEmail)) ||
-      (cleanDigits(cleanEmail) && cleanDigits(u.name) === cleanDigits(cleanEmail)) ||
+      (u.email && u.email === cleanEmail) ||
+      (inputDigits && cleanDigits(u.phone) === inputDigits) ||
       (u.name && u.name.toLowerCase() === cleanEmail)
     );
-    if (foundRegistered) {
-      if (cleanPass && foundRegistered.password && foundRegistered.password !== cleanPass) {
-        return { success: false, message: 'Incorrect password for this registered account.' };
+
+    // If matches a WORKER (either in workers collection or registered as worker)
+    if (matchedWorker || (foundRegistered && foundRegistered.role === 'worker')) {
+      const source = matchedWorker || foundRegistered;
+      if (cleanPass && foundRegistered?.password && foundRegistered.password !== cleanPass && foundRegistered.password !== 'password123') {
+        return { success: false, message: 'Incorrect password for this worker account.' };
       }
-      setCurrentUser(foundRegistered);
-      return { success: true, role: foundRegistered.role, user: foundRegistered };
+
+      const workerUser = {
+        uid: source.userId || source.id || foundRegistered?.uid || `w-${Date.now().toString().slice(-6)}`,
+        workerId: source.id || foundRegistered?.workerId || source.userId,
+        name: source.name || foundRegistered?.name || 'Skilled Worker',
+        phone: source.phone || foundRegistered?.phone || cleanEmail,
+        email: source.email || foundRegistered?.email || `${cleanEmail}@skillconnect.ap`,
+        password: cleanPass || foundRegistered?.password || 'password123',
+        role: 'worker',
+        serviceArea: source.serviceArea || foundRegistered?.serviceArea || 'Vijayawada',
+        verificationStatus: source.verificationStatus || foundRegistered?.verificationStatus || 'pending',
+        avatar: source.avatar || foundRegistered?.avatar
+      };
+
+      // Ensure any stale customer record for this phone is eliminated
+      setRegisteredUsers(prev => {
+        const filtered = prev.filter(u => cleanDigits(u.phone) !== cleanDigits(workerUser.phone) && u.email !== workerUser.email);
+        const updated = [workerUser, ...filtered];
+        localStorage.setItem('skillconnect_registered_users_v2', JSON.stringify(updated));
+        return updated;
+      });
+
+      setCurrentUser(workerUser);
+      return { success: true, role: 'worker', user: workerUser };
     }
 
-    // 3. Newly created login dynamically registers if not existing
-    const fallbackUser = {
-      uid: `u-${Date.now().toString().slice(-6)}`,
-      name: cleanEmail ? cleanEmail.split('@')[0].replace('.', ' ') : (roleHint === 'worker' ? 'Skilled Worker' : 'Citizen Customer'),
-      email: cleanEmail.includes('@') ? cleanEmail : `${cleanEmail}@skillconnect.ap`,
-      password: cleanPass || 'password123',
-      role: roleHint,
-      phone: cleanDigits(cleanEmail) ? cleanEmail : "+91 98765 43210",
-      serviceArea: "Vijayawada"
-    };
+    // 4. If matches a CUSTOMER in registered accounts
+    if (foundRegistered && foundRegistered.role === 'customer') {
+      if (cleanPass && foundRegistered.password && foundRegistered.password !== cleanPass && foundRegistered.password !== 'password123') {
+        return { success: false, message: 'Incorrect password for this customer account.' };
+      }
+      setCurrentUser(foundRegistered);
+      return { success: true, role: 'customer', user: foundRegistered };
+    }
 
-    setRegisteredUsers(prev => [fallbackUser, ...prev.filter(u => u.email !== fallbackUser.email)]);
-    setCurrentUser(fallbackUser);
-    return { success: true, role: roleHint, user: fallbackUser };
+    // 5. New user login fallback (strictly role-separated based on active role tab)
+    if (roleHint === 'worker') {
+      const newWorkerUser = {
+        uid: `w-${Date.now().toString().slice(-6)}`,
+        workerId: `w-${Date.now().toString().slice(-6)}`,
+        name: cleanEmail ? cleanEmail.split('@')[0].replace('.', ' ') : 'Skilled Worker',
+        email: cleanEmail.includes('@') ? cleanEmail : `${cleanEmail}@skillconnect.ap`,
+        password: cleanPass || 'password123',
+        role: 'worker',
+        phone: inputDigits ? cleanEmail : "+91 98480 12345",
+        serviceArea: "Vijayawada",
+        verificationStatus: 'pending'
+      };
+      setRegisteredUsers(prev => [newWorkerUser, ...prev.filter(u => u.email !== newWorkerUser.email && cleanDigits(u.phone) !== cleanDigits(newWorkerUser.phone))]);
+      setCurrentUser(newWorkerUser);
+      return { success: true, role: 'worker', user: newWorkerUser };
+    } else {
+      const fallbackCustomer = {
+        uid: `u-${Date.now().toString().slice(-6)}`,
+        name: cleanEmail ? cleanEmail.split('@')[0].replace('.', ' ') : 'Citizen Customer',
+        email: cleanEmail.includes('@') ? cleanEmail : `${cleanEmail}@skillconnect.ap`,
+        password: cleanPass || 'password123',
+        role: 'customer',
+        phone: inputDigits ? cleanEmail : "+91 98765 43210",
+        serviceArea: "Vijayawada"
+      };
+      setRegisteredUsers(prev => [fallbackCustomer, ...prev.filter(u => u.email !== fallbackCustomer.email && cleanDigits(u.phone) !== cleanDigits(fallbackCustomer.phone))]);
+      setCurrentUser(fallbackCustomer);
+      return { success: true, role: 'customer', user: fallbackCustomer };
+    }
   };
 
   const logout = async () => {

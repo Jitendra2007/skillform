@@ -22,7 +22,7 @@ import {
 export default function WorkerRegistration() {
   const { lang, t } = useLanguage();
   const { skillsList, registerWorker } = useData();
-  const { loginAs, setCurrentUser } = useAuth();
+  const { loginAs, setCurrentUser, registerUser } = useAuth();
   const navigate = useNavigate();
 
   const fileInputRef = useRef(null);
@@ -33,6 +33,7 @@ export default function WorkerRegistration() {
   const [gender, setGender] = useState('male');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [serviceArea, setServiceArea] = useState('Vijayawada');
   const [experienceYears, setExperienceYears] = useState(''); // Initially EMPTY
   const [indicativeWage, setIndicativeWage] = useState(''); // Initially EMPTY
@@ -48,6 +49,44 @@ export default function WorkerRegistration() {
   const [selfieFileName, setSelfieFileName] = useState('');
   const [photoType, setPhotoType] = useState('selfie'); // 'selfie' | 'avatar'
 
+  // Image compression helper: scales image down to max 360x360 px JPEG quality 0.8 (~25KB)
+  const compressImage = (file, maxWidth = 360, maxHeight = 360, quality = 0.8) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = (readerEvent) => {
+        const img = new Image();
+        img.onerror = reject;
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, width, height);
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          resolve(dataUrl);
+        };
+        img.src = readerEvent.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   const toggleSkill = (skillId) => {
     setSelectedSkills(prev => 
       prev.includes(skillId) 
@@ -56,7 +95,7 @@ export default function WorkerRegistration() {
     );
   };
 
-  // Handle Selfie / Camera Upload
+  // Handle Selfie / Camera Upload with Canvas Compression
   const handleSelfieChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -66,18 +105,26 @@ export default function WorkerRegistration() {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert(lang === 'te' ? 'ఫోటో పరిమాణం 5MB లోపు ఉండాలి.' : 'Selfie file size must be under 5MB.');
+    if (file.size > 15 * 1024 * 1024) {
+      alert(lang === 'te' ? 'ఫోటో పరిమాణం 15MB లోపు ఉండాలి.' : 'Selfie file size must be under 15MB.');
       return;
     }
 
     setSelfieFileName(file.name);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setSelfiePhoto(event.target.result);
-      setPhotoType('selfie');
-    };
-    reader.readAsDataURL(file);
+    compressImage(file, 360, 360, 0.8)
+      .then((compressed) => {
+        setSelfiePhoto(compressed);
+        setPhotoType('selfie');
+      })
+      .catch((err) => {
+        console.warn("Selfie compression fallback:", err);
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          setSelfiePhoto(event.target.result);
+          setPhotoType('selfie');
+        };
+        reader.readAsDataURL(file);
+      });
   };
 
   const removeSelfie = () => {
@@ -127,35 +174,33 @@ export default function WorkerRegistration() {
       fullName,
       gender,
       phone,
-      email,
+      email: email || `${phone}@skillconnect.ap`,
       serviceArea,
       experienceYears: experienceYears ? parseInt(experienceYears, 10) : 0,
       indicativeWage: indicativeWage ? parseInt(indicativeWage, 10) : null,
       bio,
       avatar: finalAvatar,
-      selfieUrl: selfiePhoto || null,
+      selfieUrl: (photoType === 'selfie' && selfiePhoto) ? selfiePhoto : null,
       skills: mappedSkills,
       aadhaarMasked: aadhaarLastFour ? `XXXX-XXXX-${aadhaarLastFour}` : 'XXXX-XXXX-0000',
       documentAttached: uploadedFileName || 'aadhaar_proof.pdf'
     });
 
-    // Auto-login into newly registered worker persona
-    if (fullWorker) {
-      const workerUser = {
-        uid: fullWorker.userId || fullWorker.id,
-        workerId: fullWorker.id,
-        name: fullWorker.name || fullName,
-        phone: fullWorker.phone || phone,
-        email: fullWorker.email || email,
-        role: 'worker',
-        serviceArea: fullWorker.serviceArea || serviceArea,
-        verificationStatus: fullWorker.verificationStatus || 'pending',
-        avatar: fullWorker.avatar || finalAvatar
-      };
-      setCurrentUser(workerUser);
-    } else {
-      loginAs('worker');
-    }
+    // Register into AuthContext user registry as worker with their chosen password
+    const workerUser = registerUser({
+      uid: fullWorker?.userId || fullWorker?.id || `w-${Date.now().toString().slice(-6)}`,
+      workerId: fullWorker?.id,
+      name: fullWorker?.name || fullName,
+      phone: fullWorker?.phone || phone,
+      email: fullWorker?.email || email || `${phone}@skillconnect.ap`,
+      password: password || 'password123',
+      role: 'worker',
+      serviceArea: fullWorker?.serviceArea || serviceArea,
+      verificationStatus: fullWorker?.verificationStatus || 'pending',
+      avatar: fullWorker?.avatar || finalAvatar
+    });
+
+    setCurrentUser(workerUser);
     setSubmitted(true);
     setTimeout(() => {
       navigate('/worker-dashboard');
@@ -502,7 +547,7 @@ export default function WorkerRegistration() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.85rem', marginBottom: '0.85rem' }}>
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label">{t('workerRegistration.email')}</label>
               <input
@@ -527,6 +572,29 @@ export default function WorkerRegistration() {
                   </option>
                 ))}
               </select>
+            </div>
+          </div>
+
+          {/* Worker Login Password */}
+          <div style={{ marginBottom: '1.25rem' }}>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label">
+                {lang === 'te' ? 'కార్మికుల లాగిన్ పాస్‌వర్డ్' : 'Create Worker Login Password'} *
+              </label>
+              <input
+                type="password"
+                required
+                minLength={4}
+                className="form-input"
+                placeholder={lang === 'te' ? 'కనీసం 4 అక్షరాల పాస్‌వర్డ్ (ఉదా: password123)' : 'Create a login password (min 4 characters, e.g. worker123)'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <span style={{ fontSize: '0.74rem', color: 'var(--color-text-muted)', marginTop: '3px', display: 'block' }}>
+                {lang === 'te' 
+                  ? 'ఈ పాస్‌వర్డ్‌తో మీరు తర్వాత వర్కర్ లాగిన్ నుండి నేరుగా డాష్‌బోర్డ్‌లోకి ప్రవేశించవచ్చు.' 
+                  : 'You will use this password and your phone number to sign in directly to your Worker Dashboard.'}
+              </span>
             </div>
           </div>
 
